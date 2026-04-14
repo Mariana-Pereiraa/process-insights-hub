@@ -1,0 +1,157 @@
+export type ProcessStatus = "em_revisao" | "concluido";
+
+export interface Risk {
+  id: string;
+  nome: string;
+  faseProcesso: string;
+  tipoRisco: string;
+  descricao: string;
+  probabilidade: string;
+  impacto: string;
+  nivelRisco: string;
+}
+
+export interface ProcessStep {
+  id: number;
+  titulo: string;
+  descricao: string;
+  riscos?: Risk[];
+  controles?: string[];
+  respostas?: string[];
+  atividades?: string[];
+  ocorrencias?: string[];
+  observacoes?: string;
+}
+
+export interface Process {
+  id: string;
+  nome: string;
+  unidade: string;
+  setor: string;
+  responsavel: string;
+  status: ProcessStatus;
+  diasDesdeUltimaRevisao: number;
+  etapas: ProcessStep[];
+}
+
+export const mockProcesses: Process[] = [
+  {
+    id: "1",
+    nome: "Concessão de bolsas de estágio",
+    unidade: "Gabinete do Reitor",
+    setor: "Gabinete do Reitor",
+    responsavel: "Mariana Pereira Da Silva",
+    status: "em_revisao",
+    diasDesdeUltimaRevisao: 370,
+    etapas: [
+      {
+        id: 1,
+        titulo: "Identificação de Riscos",
+        descricao: "Identificação de riscos relacionados ao processo",
+        riscos: [
+          { id: "r1", nome: "Atraso na publicação do edital", faseProcesso: "Planejamento", tipoRisco: "AMEAÇA", descricao: "Risco de atraso na publicação do edital de seleção", probabilidade: "Média", impacto: "Alto", nivelRisco: "Alto" },
+          { id: "r2", nome: "Falta de recursos financeiros", faseProcesso: "Execução", tipoRisco: "AMEAÇA", descricao: "Insuficiência de recursos para cobrir todas as bolsas", probabilidade: "Baixa", impacto: "Muito Alto", nivelRisco: "Alto" },
+        ],
+        observacoes: "Riscos identificados na última análise semestral",
+      },
+      {
+        id: 2,
+        titulo: "Avaliação de Riscos e Controles",
+        descricao: "Avaliação dos riscos identificados e controles existentes",
+        controles: ["Cronograma de publicação com marcos definidos", "Reserva orçamentária prévia", "Comitê de acompanhamento mensal"],
+        observacoes: "Controles avaliados e considerados adequados",
+      },
+      {
+        id: 3,
+        titulo: "Resposta aos Riscos",
+        descricao: "Definição de respostas para os riscos identificados",
+        respostas: ["Mitigar: Antecipar preparação do edital em 30 dias", "Transferir: Solicitar suplementação orçamentária", "Aceitar: Monitorar indicadores trimestrais"],
+        observacoes: "Respostas aprovadas pelo comitê de gestão",
+      },
+      {
+        id: 4,
+        titulo: "Atividades de Controle",
+        descricao: "Atividades de controle implementadas",
+        atividades: ["Reunião mensal de acompanhamento", "Relatório trimestral de execução", "Auditoria interna anual", "Sistema de alertas automáticos"],
+        observacoes: "Todas as atividades em execução regular",
+      },
+      {
+        id: 5,
+        titulo: "Ocorrências de Risco",
+        descricao: "Registro de ocorrências de risco",
+        ocorrencias: ["15/01/2025 - Atraso de 5 dias na publicação do edital (resolvido)"],
+        observacoes: "Ocorrência registrada e tratada",
+      },
+    ],
+  },
+  {
+    id: "2",
+    nome: "Gestão de contratos de TI",
+    unidade: "Superintendência de TI",
+    setor: "Contratos",
+    responsavel: "Carlos Eduardo Santos",
+    status: "em_revisao",
+    diasDesdeUltimaRevisao: 380,
+    etapas: [
+      {
+        id: 1, titulo: "Identificação de Riscos", descricao: "Identificação de riscos em contratos de TI",
+        riscos: [
+          { id: "r3", nome: "Descontinuidade de fornecedor", faseProcesso: "Execução", tipoRisco: "AMEAÇA", descricao: "Risco de descontinuidade do fornecedor principal", probabilidade: "Baixa", impacto: "Muito Alto", nivelRisco: "Crítico" },
+        ],
+        observacoes: "Análise atualizada em março/2025",
+      },
+      { id: 2, titulo: "Avaliação de Riscos e Controles", descricao: "Avaliação dos controles contratuais", controles: ["Cláusulas de SLA", "Garantias contratuais", "Plano de contingência"], observacoes: "Controles adequados" },
+      { id: 3, titulo: "Resposta aos Riscos", descricao: "Respostas definidas", respostas: ["Mitigar: Manter fornecedor backup", "Transferir: Seguro contratual"], observacoes: "" },
+      { id: 4, titulo: "Atividades de Controle", descricao: "Atividades de monitoramento", atividades: ["Monitoramento semanal de SLA", "Reunião mensal com fornecedor"], observacoes: "" },
+      { id: 5, titulo: "Ocorrências de Risco", descricao: "Sem ocorrências registradas", ocorrencias: [], observacoes: "" },
+    ],
+  },
+  {
+    id: "3",
+    nome: "Processo de licitação de obras",
+    unidade: "Pró-Reitoria de Infraestrutura",
+    setor: "Licitações",
+    responsavel: "Ana Beatriz Lima",
+    status: "concluido",
+    diasDesdeUltimaRevisao: 30,
+    etapas: [
+      { id: 1, titulo: "Identificação de Riscos", descricao: "Riscos em licitações de obras", riscos: [{ id: "r4", nome: "Sobrepreço em propostas", faseProcesso: "Seleção", tipoRisco: "AMEAÇA", descricao: "Propostas acima do valor de referência", probabilidade: "Média", impacto: "Alto", nivelRisco: "Alto" }], observacoes: "Revisado" },
+      { id: 2, titulo: "Avaliação de Riscos e Controles", descricao: "Controles de licitação", controles: ["Pesquisa de preços obrigatória", "Comissão de licitação"], observacoes: "" },
+      { id: 3, titulo: "Resposta aos Riscos", descricao: "Respostas", respostas: ["Mitigar: Pesquisa ampla de mercado"], observacoes: "" },
+      { id: 4, titulo: "Atividades de Controle", descricao: "Atividades", atividades: ["Checklist de conformidade", "Parecer jurídico obrigatório"], observacoes: "" },
+      { id: 5, titulo: "Ocorrências de Risco", descricao: "Sem ocorrências", ocorrencias: [], observacoes: "" },
+    ],
+  },
+  {
+    id: "4",
+    nome: "Gestão de patrimônio",
+    unidade: "Pró-Reitoria de Administração",
+    setor: "Patrimônio",
+    responsavel: "Roberto Almeida",
+    status: "em_revisao",
+    diasDesdeUltimaRevisao: 200,
+    etapas: [
+      { id: 1, titulo: "Identificação de Riscos", descricao: "Riscos patrimoniais", riscos: [{ id: "r5", nome: "Extravio de bens", faseProcesso: "Controle", tipoRisco: "AMEAÇA", descricao: "Risco de extravio ou furto de bens patrimoniais", probabilidade: "Média", impacto: "Médio", nivelRisco: "Médio" }], observacoes: "" },
+      { id: 2, titulo: "Avaliação de Riscos e Controles", descricao: "Avaliação", controles: ["Inventário anual", "Sistema de rastreamento"], observacoes: "" },
+      { id: 3, titulo: "Resposta aos Riscos", descricao: "Respostas", respostas: ["Mitigar: Etiquetamento RFID"], observacoes: "" },
+      { id: 4, titulo: "Atividades de Controle", descricao: "Atividades", atividades: ["Conferência trimestral"], observacoes: "" },
+      { id: 5, titulo: "Ocorrências de Risco", descricao: "Sem ocorrências", ocorrencias: [], observacoes: "" },
+    ],
+  },
+  {
+    id: "5",
+    nome: "Controle de frequência de servidores",
+    unidade: "Pró-Reitoria de Gestão de Pessoas",
+    setor: "RH",
+    responsavel: "Fernanda Costa",
+    status: "concluido",
+    diasDesdeUltimaRevisao: 60,
+    etapas: [
+      { id: 1, titulo: "Identificação de Riscos", descricao: "Riscos de frequência", riscos: [{ id: "r6", nome: "Fraude no ponto", faseProcesso: "Operação", tipoRisco: "AMEAÇA", descricao: "Registro indevido de frequência", probabilidade: "Baixa", impacto: "Alto", nivelRisco: "Médio" }], observacoes: "" },
+      { id: 2, titulo: "Avaliação de Riscos e Controles", descricao: "Avaliação", controles: ["Ponto biométrico", "Auditoria mensal"], observacoes: "" },
+      { id: 3, titulo: "Resposta aos Riscos", descricao: "Respostas", respostas: ["Mitigar: Sistema biométrico com geolocalização"], observacoes: "" },
+      { id: 4, titulo: "Atividades de Controle", descricao: "Atividades", atividades: ["Relatório mensal de inconsistências"], observacoes: "" },
+      { id: 5, titulo: "Ocorrências de Risco", descricao: "Sem ocorrências", ocorrencias: [], observacoes: "" },
+    ],
+  },
+];

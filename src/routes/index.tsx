@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState, useMemo } from "react";
-import { AlertTriangle, Clock, Search, Eye } from "lucide-react";
+import { AlertTriangle, CalendarDays, Search, Eye } from "lucide-react";
 import { AppSidebar } from "@/components/AppSidebar";
 import { Topbar } from "@/components/Topbar";
 import { StatusBadge } from "@/components/StatusBadge";
@@ -43,7 +43,12 @@ function Dashboard() {
   }, [sorted, filterUnidade, filterStatus, search]);
 
   const totalRevisao = mockProcesses.filter((p) => p.status === "em_revisao").length;
-  const totalProximoPrazo = mockProcesses.filter((p) => p.diasDesdeUltimaRevisao >= 300 && p.status !== "concluido").length;
+  const now = new Date();
+  const mesAtual = `${String(now.getMonth() + 1).padStart(2, "0")}/${now.getFullYear()}`;
+  const revisoesMes = mockProcesses.filter((p) => {
+    const parts = p.dataEnvioRevisao.split("/");
+    return parts.length === 3 && `${parts[1]}/${parts[2]}` === mesAtual;
+  }).length;
 
   return (
     <div className="flex min-h-screen w-full bg-background">
@@ -62,13 +67,13 @@ function Dashboard() {
                 <p className="text-3xl font-bold text-status-review">{totalRevisao}</p>
               </div>
             </div>
-            <div className="bg-status-warning-bg/50 border border-status-warning/20 rounded-2xl p-6 flex items-center gap-5">
-              <div className="w-14 h-14 rounded-xl bg-status-warning/15 flex items-center justify-center">
-                <Clock className="w-7 h-7 text-status-warning" />
+            <div className="bg-primary/5 border border-primary/20 rounded-2xl p-6 flex items-center gap-5">
+              <div className="w-14 h-14 rounded-xl bg-primary/15 flex items-center justify-center">
+                <CalendarDays className="w-7 h-7 text-primary" />
               </div>
               <div>
-                <p className="text-sm font-medium text-muted-foreground">Processos próximos do prazo</p>
-                <p className="text-3xl font-bold text-status-warning">{totalProximoPrazo}</p>
+                <p className="text-sm font-medium text-muted-foreground">Revisões este mês</p>
+                <p className="text-3xl font-bold text-primary">{revisoesMes}</p>
               </div>
             </div>
           </div>

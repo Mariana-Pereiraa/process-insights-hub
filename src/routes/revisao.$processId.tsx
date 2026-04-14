@@ -32,7 +32,7 @@ export const Route = createFileRoute("/revisao/$processId")({
 const stepIcons = [FileText, Shield, AlertTriangle, Activity, AlertCircle];
 
 function ProcessReview() {
-  const process = Route.useLoaderData();
+  const process = Route.useLoaderData() as import("@/data/mock-processes").Process;
   const [openSteps, setOpenSteps] = useState<Set<number>>(new Set([1]));
   const [observacaoRevisor, setObservacaoRevisor] = useState("");
   const [submitted, setSubmitted] = useState<"aceito" | "ajustes" | null>(null);

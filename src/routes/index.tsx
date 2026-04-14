@@ -43,7 +43,12 @@ function Dashboard() {
   }, [sorted, filterUnidade, filterStatus, search]);
 
   const totalRevisao = mockProcesses.filter((p) => p.status === "em_revisao").length;
-  const totalProximoPrazo = mockProcesses.filter((p) => p.diasDesdeUltimaRevisao >= 300 && p.status !== "concluido").length;
+  const now = new Date();
+  const mesAtual = `${String(now.getMonth() + 1).padStart(2, "0")}/${now.getFullYear()}`;
+  const revisoesMes = mockProcesses.filter((p) => {
+    const parts = p.dataEnvioRevisao.split("/");
+    return parts.length === 3 && `${parts[1]}/${parts[2]}` === mesAtual;
+  }).length;
 
   return (
     <div className="flex min-h-screen w-full bg-background">

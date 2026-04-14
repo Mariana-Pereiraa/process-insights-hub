@@ -31,6 +31,7 @@ export interface Process {
   responsavel: string;
   status: ProcessStatus;
   diasDesdeUltimaRevisao: number;
+  dataEnvioRevisao: string;
   etapas: ProcessStep[];
 }
 
@@ -43,6 +44,7 @@ export const mockProcesses: Process[] = [
     responsavel: "Mariana Pereira Da Silva",
     status: "em_revisao",
     diasDesdeUltimaRevisao: 370,
+    dataEnvioRevisao: "10/04/2025",
     etapas: [
       {
         id: 1,
@@ -92,6 +94,7 @@ export const mockProcesses: Process[] = [
     responsavel: "Carlos Eduardo Santos",
     status: "em_revisao",
     diasDesdeUltimaRevisao: 380,
+    dataEnvioRevisao: "01/04/2025",
     etapas: [
       {
         id: 1, titulo: "Identificação de Riscos", descricao: "Identificação de riscos em contratos de TI",
@@ -114,6 +117,7 @@ export const mockProcesses: Process[] = [
     responsavel: "Ana Beatriz Lima",
     status: "concluido",
     diasDesdeUltimaRevisao: 30,
+    dataEnvioRevisao: "15/03/2025",
     etapas: [
       { id: 1, titulo: "Identificação de Riscos", descricao: "Riscos em licitações de obras", riscos: [{ id: "r4", nome: "Sobrepreço em propostas", faseProcesso: "Seleção", tipoRisco: "AMEAÇA", descricao: "Propostas acima do valor de referência", probabilidade: "Média", impacto: "Alto", nivelRisco: "Alto" }], observacoes: "Revisado" },
       { id: 2, titulo: "Avaliação de Riscos e Controles", descricao: "Controles de licitação", controles: ["Pesquisa de preços obrigatória", "Comissão de licitação"], observacoes: "" },
@@ -130,6 +134,7 @@ export const mockProcesses: Process[] = [
     responsavel: "Roberto Almeida",
     status: "em_revisao",
     diasDesdeUltimaRevisao: 200,
+    dataEnvioRevisao: "25/09/2024",
     etapas: [
       { id: 1, titulo: "Identificação de Riscos", descricao: "Riscos patrimoniais", riscos: [{ id: "r5", nome: "Extravio de bens", faseProcesso: "Controle", tipoRisco: "AMEAÇA", descricao: "Risco de extravio ou furto de bens patrimoniais", probabilidade: "Média", impacto: "Médio", nivelRisco: "Médio" }], observacoes: "" },
       { id: 2, titulo: "Avaliação de Riscos e Controles", descricao: "Avaliação", controles: ["Inventário anual", "Sistema de rastreamento"], observacoes: "" },
@@ -146,6 +151,7 @@ export const mockProcesses: Process[] = [
     responsavel: "Fernanda Costa",
     status: "concluido",
     diasDesdeUltimaRevisao: 60,
+    dataEnvioRevisao: "13/02/2025",
     etapas: [
       { id: 1, titulo: "Identificação de Riscos", descricao: "Riscos de frequência", riscos: [{ id: "r6", nome: "Fraude no ponto", faseProcesso: "Operação", tipoRisco: "AMEAÇA", descricao: "Registro indevido de frequência", probabilidade: "Baixa", impacto: "Alto", nivelRisco: "Médio" }], observacoes: "" },
       { id: 2, titulo: "Avaliação de Riscos e Controles", descricao: "Avaliação", controles: ["Ponto biométrico", "Auditoria mensal"], observacoes: "" },

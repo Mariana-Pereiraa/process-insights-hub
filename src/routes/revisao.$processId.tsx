@@ -4,7 +4,7 @@ import { ArrowLeft, ChevronDown, ChevronRight, AlertTriangle, CheckCircle2, File
 import { AppSidebar } from "@/components/AppSidebar";
 import { Topbar } from "@/components/Topbar";
 import { StatusBadge } from "@/components/StatusBadge";
-import { mockProcesses } from "@/data/mock-processes";
+import { mockProcesses, type ProcessStep, type Risk } from "@/data/mock-processes";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/revisao/$processId")({

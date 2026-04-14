@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState, useMemo } from "react";
-import { AlertTriangle, CheckCircle2, Search, Eye } from "lucide-react";
+import { AlertTriangle, Clock, Search, Eye } from "lucide-react";
 import { AppSidebar } from "@/components/AppSidebar";
 import { Topbar } from "@/components/Topbar";
 import { StatusBadge } from "@/components/StatusBadge";
@@ -43,7 +43,7 @@ function Dashboard() {
   }, [sorted, filterUnidade, filterStatus, search]);
 
   const totalRevisao = mockProcesses.filter((p) => p.status === "em_revisao").length;
-  const totalConcluido = mockProcesses.filter((p) => p.status === "concluido").length;
+  const totalProximoPrazo = mockProcesses.filter((p) => p.diasDesdeUltimaRevisao >= 300 && p.status !== "concluido").length;
 
   return (
     <div className="flex min-h-screen w-full bg-background">
@@ -58,17 +58,17 @@ function Dashboard() {
                 <AlertTriangle className="w-7 h-7 text-status-review" />
               </div>
               <div>
-                <p className="text-sm font-medium text-muted-foreground">Processos para Revisão</p>
+                <p className="text-sm font-medium text-muted-foreground">Processos necessitando de revisão</p>
                 <p className="text-3xl font-bold text-status-review">{totalRevisao}</p>
               </div>
             </div>
-            <div className="bg-status-done-bg/50 border border-status-done/20 rounded-2xl p-6 flex items-center gap-5">
-              <div className="w-14 h-14 rounded-xl bg-status-done/15 flex items-center justify-center">
-                <CheckCircle2 className="w-7 h-7 text-status-done" />
+            <div className="bg-status-warning-bg/50 border border-status-warning/20 rounded-2xl p-6 flex items-center gap-5">
+              <div className="w-14 h-14 rounded-xl bg-status-warning/15 flex items-center justify-center">
+                <Clock className="w-7 h-7 text-status-warning" />
               </div>
               <div>
-                <p className="text-sm font-medium text-muted-foreground">Processos Concluídos</p>
-                <p className="text-3xl font-bold text-status-done">{totalConcluido}</p>
+                <p className="text-sm font-medium text-muted-foreground">Processos próximos do prazo</p>
+                <p className="text-3xl font-bold text-status-warning">{totalProximoPrazo}</p>
               </div>
             </div>
           </div>
@@ -116,7 +116,7 @@ function Dashboard() {
                     <th className="text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider px-5 py-3">Unidade</th>
                     <th className="text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider px-5 py-3">Responsável</th>
                     <th className="text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider px-5 py-3">Status</th>
-                    <th className="text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider px-5 py-3">Dias</th>
+                    <th className="text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider px-5 py-3">Envio</th>
                     <th className="text-right text-xs font-semibold text-muted-foreground uppercase tracking-wider px-5 py-3">Ação</th>
                   </tr>
                 </thead>
@@ -128,9 +128,7 @@ function Dashboard() {
                       <td className="px-5 py-4 text-sm text-muted-foreground">{process.responsavel}</td>
                       <td className="px-5 py-4"><StatusBadge status={process.status} /></td>
                       <td className="px-5 py-4 text-sm text-muted-foreground">
-                        <span className={process.diasDesdeUltimaRevisao >= 365 ? "text-status-review font-semibold" : ""}>
-                          {process.diasDesdeUltimaRevisao}d
-                        </span>
+                        {process.dataEnvioRevisao}
                       </td>
                       <td className="px-5 py-4 text-right">
                         <Link

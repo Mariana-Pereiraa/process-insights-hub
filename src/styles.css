@@ -62,6 +62,8 @@
   --color-status-review-bg: var(--status-review-bg);
   --color-status-done: var(--status-done);
   --color-status-done-bg: var(--status-done-bg);
+  --color-status-warning: var(--status-warning);
+  --color-status-warning-bg: var(--status-warning-bg);
   --color-action-blue: var(--action-blue);
   --color-action-blue-hover: var(--action-blue-hover);
   --color-sidebar-bg: var(--sidebar-bg);
@@ -102,10 +104,12 @@
   --sidebar-border: oklch(0.35 0.04 270);
   --sidebar-ring: oklch(0.55 0.15 250);
   --sidebar: oklch(0.25 0.04 270);
-  --status-review: oklch(0.7 0.18 25);
-  --status-review-bg: oklch(0.93 0.05 25);
+  --status-review: oklch(0.72 0.16 55);
+  --status-review-bg: oklch(0.95 0.04 55);
   --status-done: oklch(0.6 0.18 150);
   --status-done-bg: oklch(0.93 0.05 150);
+  --status-warning: oklch(0.78 0.15 75);
+  --status-warning-bg: oklch(0.95 0.04 75);
   --action-blue: oklch(0.55 0.15 250);
   --action-blue-hover: oklch(0.5 0.17 250);
 }

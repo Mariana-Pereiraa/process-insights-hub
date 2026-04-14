@@ -58,7 +58,7 @@ function Dashboard() {
                 <AlertTriangle className="w-7 h-7 text-status-review" />
               </div>
               <div>
-                <p className="text-sm font-medium text-muted-foreground">Processos necessitando de revisão</p>
+                <p className="text-sm font-medium text-muted-foreground">Processos aguardando revisão</p>
                 <p className="text-3xl font-bold text-status-review">{totalRevisao}</p>
               </div>
             </div>
@@ -112,7 +112,7 @@ function Dashboard() {
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-border">
-                    <th className="text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider px-5 py-3">Processo</th>
+                    <th className="text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider px-5 py-3">Nome</th>
                     <th className="text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider px-5 py-3">Unidade</th>
                     <th className="text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider px-5 py-3">Responsável</th>
                     <th className="text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider px-5 py-3">Status</th>

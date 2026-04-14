@@ -107,7 +107,7 @@ function Dashboard() {
                 className="px-4 py-2.5 rounded-xl border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring"
               >
                 <option value="todos">Todos os Status</option>
-                <option value="em_revisao">Em revisão</option>
+                <option value="em_revisao">Para revisão</option>
                 <option value="concluido">Concluído</option>
               </select>
             </div>

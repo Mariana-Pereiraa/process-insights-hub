@@ -53,7 +53,7 @@ function Dashboard() {
         <Topbar title="Acompanhamento" />
         <main className="flex-1 p-6 overflow-auto">
           {/* Summary cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-8">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-8">
             <div className="border rounded-2xl p-6 flex items-center gap-5 border-slate-400 !bg-white">
               <div className="w-14 h-14 rounded-xl flex items-center justify-center bg-slate-300">
                 <CircleChevronDown className="w-7 h-7 bg-transparent text-slate-700" />
@@ -63,13 +63,22 @@ function Dashboard() {
                 <p className="text-3xl font-bold !text-black">{totalRevisao}</p>
               </div>
             </div>
-            <div className="bg-primary/5 border border-primary/20 rounded-2xl p-6 flex items-center gap-5">
-              <div className="w-14 h-14 rounded-xl bg-primary/15 flex items-center justify-center">
-                <CalendarDays className="w-7 h-7 text-primary" />
+            <div className="border rounded-2xl p-6 flex items-center gap-5 border-amber-400 !bg-white">
+              <div className="w-14 h-14 rounded-xl flex items-center justify-center bg-amber-100">
+                <RotateCcw className="w-7 h-7 text-amber-600" />
               </div>
               <div>
-                <p className="text-sm font-medium text-muted-foreground">Revisões este mês</p>
-                <p className="text-3xl font-bold text-primary">{revisoesMes}</p>
+                <p className="text-sm font-medium text-muted-foreground">Devolvidos para ajuste</p>
+                <p className="text-3xl font-bold !text-black">{totalDevolvido}</p>
+              </div>
+            </div>
+            <div className="border rounded-2xl p-6 flex items-center gap-5 border-emerald-400 !bg-white">
+              <div className="w-14 h-14 rounded-xl flex items-center justify-center bg-emerald-100">
+                <CheckCircle2 className="w-7 h-7 text-emerald-600" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Concluídos</p>
+                <p className="text-3xl font-bold !text-black">{totalConcluido}</p>
               </div>
             </div>
           </div>

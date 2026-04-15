@@ -3,7 +3,7 @@ import type { ProcessStatus } from "@/data/mock-processes";
 
 const statusConfig: Record<ProcessStatus, { label: string; className: string }> = {
   em_revisao: {
-    label: "Para revisão",
+    label: "Revisão",
     className: "bg-status-review-bg text-status-review",
   },
   concluido: {

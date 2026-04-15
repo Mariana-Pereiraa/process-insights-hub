@@ -58,7 +58,7 @@ function Dashboard() {
         <main className="flex-1 p-6 overflow-auto">
           {/* Summary cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-8">
-            <div className="bg-status-review-bg/50 border border-status-review/20 rounded-2xl p-6 flex items-center gap-5 border-slate-400 bg-slate-50">
+            <div className="bg-status-review-bg/50 border border-status-review/20 rounded-2xl p-6 flex items-center gap-5 border-slate-400 bg-gray-50">
               <div className="w-14 h-14 rounded-xl bg-status-review/15 flex items-center justify-center bg-slate-300">
                 <CircleChevronDown className="w-7 h-7 text-status-review bg-transparent text-slate-700" />
               </div>

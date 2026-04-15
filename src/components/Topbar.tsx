@@ -18,7 +18,7 @@ export function Topbar({ title, onToggleSidebar }: TopbarProps) {
       <div className="flex items-center gap-4">
         <button className="relative text-muted-foreground hover:text-foreground transition-colors">
           <Bell className="w-5 h-5" />
-          <span className="absolute -top-1 -right-1 w-4 h-4 bg-status-review text-[10px] font-bold rounded-full flex items-center justify-center text-primary-foreground">3</span>
+          <span className="absolute -top-1 -right-1 w-4 h-4 bg-status-review text-[10px] font-bold rounded-full flex items-center justify-center text-primary-foreground bg-red-600">3</span>
         </button>
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center">

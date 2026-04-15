@@ -43,12 +43,8 @@ function Dashboard() {
   }, [sorted, filterUnidade, filterStatus, search]);
 
   const totalRevisao = mockProcesses.filter((p) => p.status === "em_revisao").length;
-  const now = new Date();
-  const mesAtual = `${String(now.getMonth() + 1).padStart(2, "0")}/${now.getFullYear()}`;
-  const revisoesMes = mockProcesses.filter((p) => {
-    const parts = p.dataEnvioRevisao.split("/");
-    return parts.length === 3 && `${parts[1]}/${parts[2]}` === mesAtual;
-  }).length;
+  const totalConcluido = mockProcesses.filter((p) => p.status === "concluido").length;
+  const totalDevolvido = 0; // placeholder — sem status "devolvido" nos dados mock
 
   return (
     <div className="flex min-h-screen w-full bg-background">

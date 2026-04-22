@@ -1,9 +1,10 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useState } from "react";
-import { ArrowLeft, ChevronDown, ChevronRight, AlertTriangle, CheckCircle2, FileText, Shield, Activity, AlertCircle } from "lucide-react";
+import { ArrowLeft, ChevronDown, ChevronRight, AlertTriangle, CheckCircle2, FileText, Shield, Activity, AlertCircle, History } from "lucide-react";
 import { AppSidebar } from "@/components/AppSidebar";
 import { Topbar } from "@/components/Topbar";
 import { StatusBadge } from "@/components/StatusBadge";
+import { HistoricoTimeline } from "@/components/HistoricoTimeline";
 import { mockProcesses, type ProcessStep, type Risk } from "@/data/mock-processes";
 import { Button } from "@/components/ui/button";
 
@@ -241,6 +242,20 @@ function ProcessReview() {
                 </div>
               );
             })}
+          </div>
+
+          {/* Histórico do Processo */}
+          <div className="bg-card rounded-2xl border border-border shadow-sm p-6 mb-8">
+            <div className="flex items-center gap-3 mb-5">
+              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                <History className="w-5 h-5 text-primary" />
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-foreground">Histórico do Processo</h3>
+                <p className="text-xs text-muted-foreground">Linha do tempo das movimentações e decisões</p>
+              </div>
+            </div>
+            <HistoricoTimeline eventos={process.historico} />
           </div>
 
           {/* Review actions */}

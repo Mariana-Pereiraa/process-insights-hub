@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as RevisaoProcessIdRouteImport } from './routes/revisao.$processId'
+import { Route as HistoricoProcessIdRouteImport } from './routes/historico.$processId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -22,30 +23,39 @@ const RevisaoProcessIdRoute = RevisaoProcessIdRouteImport.update({
   path: '/revisao/$processId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const HistoricoProcessIdRoute = HistoricoProcessIdRouteImport.update({
+  id: '/historico/$processId',
+  path: '/historico/$processId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/historico/$processId': typeof HistoricoProcessIdRoute
   '/revisao/$processId': typeof RevisaoProcessIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/historico/$processId': typeof HistoricoProcessIdRoute
   '/revisao/$processId': typeof RevisaoProcessIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/historico/$processId': typeof HistoricoProcessIdRoute
   '/revisao/$processId': typeof RevisaoProcessIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/revisao/$processId'
+  fullPaths: '/' | '/historico/$processId' | '/revisao/$processId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/revisao/$processId'
-  id: '__root__' | '/' | '/revisao/$processId'
+  to: '/' | '/historico/$processId' | '/revisao/$processId'
+  id: '__root__' | '/' | '/historico/$processId' | '/revisao/$processId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  HistoricoProcessIdRoute: typeof HistoricoProcessIdRoute
   RevisaoProcessIdRoute: typeof RevisaoProcessIdRoute
 }
 
@@ -65,11 +75,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RevisaoProcessIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/historico/$processId': {
+      id: '/historico/$processId'
+      path: '/historico/$processId'
+      fullPath: '/historico/$processId'
+      preLoaderRoute: typeof HistoricoProcessIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  HistoricoProcessIdRoute: HistoricoProcessIdRoute,
   RevisaoProcessIdRoute: RevisaoProcessIdRoute,
 }
 export const routeTree = rootRouteImport

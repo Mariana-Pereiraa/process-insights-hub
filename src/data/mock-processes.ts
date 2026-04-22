@@ -9,8 +9,7 @@ export type HistoricoTipo =
   | "concluido"
   | "em_ajuste"
   | "pendente_revisao_anual"
-  | "ajuste_anual_solicitado"
-  | "aguardando_revisao_anual";
+  | "ajuste_anual_solicitado";
 
 export interface HistoricoEvento {
   id: string;
@@ -116,7 +115,7 @@ export const mockProcesses: Process[] = [
       { id: "h1-6", tipo: "revisado", data: "02/04/2024", hora: "14:00", usuario: "Equipe SECGOV", observacao: "Revisão aprovada" },
       { id: "h1-7", tipo: "concluido", data: "05/04/2024", hora: "17:30", usuario: "Equipe SECGOV", observacao: "Ciclo anterior concluído" },
       { id: "h1-8", tipo: "pendente_revisao_anual", data: "01/04/2025", hora: "08:00", usuario: "Sistema", observacao: "Ciclo anual disparado automaticamente" },
-      { id: "h1-9", tipo: "aguardando_revisao_anual", data: "05/04/2025", hora: "09:30", usuario: "Mariana Pereira Da Silva", observacao: "Aguardando triagem da SECGOV" },
+      
       { id: "h1-10", tipo: "chegou_revisao", data: "10/04/2025", hora: "14:32", usuario: "Mariana Pereira Da Silva", observacao: "Nova revisão anual enviada" },
       { id: "h1-11", tipo: "em_analise", data: "12/04/2025", hora: "10:05", usuario: "Equipe SECGOV", observacao: "Revisão iniciada pela SECGOV" },
       { id: "h1-12", tipo: "ajuste_anual_solicitado", data: "15/04/2025", hora: "11:20", usuario: "Equipe SECGOV", observacao: "Solicitados ajustes referentes ao ciclo anual" },

@@ -23,6 +23,7 @@ function Dashboard() {
   const [filterUnidade, setFilterUnidade] = useState("");
   const [filterStatus, setFilterStatus] = useState<"todos" | ProcessStatus>("todos");
   const [search, setSearch] = useState("");
+  const [historicoProcess, setHistoricoProcess] = useState<Process | null>(null);
 
   const unidades = useMemo(() => [...new Set(mockProcesses.map((p) => p.unidade))], []);
 
@@ -128,41 +129,31 @@ function Dashboard() {
                     <th className="text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider px-5 py-3">Unidade</th>
                     <th className="text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider px-5 py-3">Responsável</th>
                     <th className="text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider px-5 py-3">Status</th>
-                    <th className="text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider px-5 py-3">Última ação</th>
                     <th className="text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider px-5 py-3">Envio</th>
-                    <th className="text-right text-xs font-semibold text-muted-foreground uppercase tracking-wider px-5 py-3">Ação</th>
+                    <th className="text-right text-xs font-semibold text-muted-foreground uppercase tracking-wider px-5 py-3">Ações</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {filtered.map((process) => {
-                    const ultima = getUltimaAcao(process.historico);
-                    const cfg = ultima ? ultimaAcaoConfig[ultima.tipo] : null;
-                    const UltimaIcon = cfg?.Icon;
-                    return (
-                      <tr key={process.id} className="border-b border-border/50 hover:bg-muted/30 transition-colors">
-                        <td className="px-5 py-4 text-sm font-medium text-foreground">{process.nome}</td>
-                        <td className="px-5 py-4 text-sm text-muted-foreground">{process.unidade}</td>
-                        <td className="px-5 py-4 text-sm text-muted-foreground">{process.responsavel}</td>
-                        <td className="px-5 py-4"><StatusBadge status={process.status} /></td>
-                        <td className="px-5 py-4">
-                          {ultima && cfg && UltimaIcon ? (
-                            <div className="flex items-center gap-2">
-                              <span className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-medium ${cfg.className}`}>
-                                <UltimaIcon className="w-3.5 h-3.5" />
-                                {cfg.label}
-                              </span>
-                              <span className="text-xs text-muted-foreground tabular-nums whitespace-nowrap">
-                                {ultima.data}
-                              </span>
-                            </div>
-                          ) : (
-                            <span className="text-xs text-muted-foreground">—</span>
-                          )}
-                        </td>
-                        <td className="px-5 py-4 text-sm text-muted-foreground">
-                          {process.dataEnvioRevisao}
-                        </td>
-                        <td className="px-5 py-4 text-right">
+                  {filtered.map((process) => (
+                    <tr key={process.id} className="border-b border-border/50 hover:bg-muted/30 transition-colors">
+                      <td className="px-5 py-4 text-sm font-medium text-foreground">{process.nome}</td>
+                      <td className="px-5 py-4 text-sm text-muted-foreground">{process.unidade}</td>
+                      <td className="px-5 py-4 text-sm text-muted-foreground">{process.responsavel}</td>
+                      <td className="px-5 py-4"><StatusBadge status={process.status} /></td>
+                      <td className="px-5 py-4 text-sm text-muted-foreground">
+                        {process.dataEnvioRevisao}
+                      </td>
+                      <td className="px-5 py-4">
+                        <div className="flex items-center justify-end gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="gap-1.5"
+                            onClick={() => setHistoricoProcess(process)}
+                          >
+                            <History className="w-4 h-4" />
+                            Histórico
+                          </Button>
                           <Link
                             to="/revisao/$processId"
                             params={{ processId: process.id }}
@@ -172,13 +163,13 @@ function Dashboard() {
                               Revisar
                             </Button>
                           </Link>
-                        </td>
-                      </tr>
-                    );
-                  })}
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
                   {filtered.length === 0 && (
                     <tr>
-                      <td colSpan={7} className="px-5 py-12 text-center text-muted-foreground text-sm">
+                      <td colSpan={6} className="px-5 py-12 text-center text-muted-foreground text-sm">
                         Nenhum processo encontrado.
                       </td>
                     </tr>
@@ -189,6 +180,30 @@ function Dashboard() {
           </div>
         </main>
       </div>
+
+      {/* Modal de Histórico */}
+      <Dialog open={historicoProcess !== null} onOpenChange={(open) => !open && setHistoricoProcess(null)}>
+        <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
+          <DialogHeader>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                <History className="w-5 h-5 text-primary" />
+              </div>
+              <div className="text-left">
+                <DialogTitle>Histórico do Processo</DialogTitle>
+                <DialogDescription className="line-clamp-1">
+                  {historicoProcess?.nome}
+                </DialogDescription>
+              </div>
+            </div>
+          </DialogHeader>
+          <div className="mt-4">
+            {historicoProcess && (
+              <HistoricoTimeline eventos={historicoProcess.historico} />
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

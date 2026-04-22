@@ -1,5 +1,22 @@
 export type ProcessStatus = "em_revisao" | "concluido";
 
+export type HistoricoTipo =
+  | "criado"
+  | "chegou_revisao"
+  | "em_analise"
+  | "ajuste_solicitado"
+  | "revisado"
+  | "concluido";
+
+export interface HistoricoEvento {
+  id: string;
+  tipo: HistoricoTipo;
+  data: string; // dd/mm/aaaa
+  hora: string; // HH:MM
+  usuario?: string;
+  observacao?: string;
+}
+
 export interface Risk {
   id: string;
   nome: string;
@@ -33,6 +50,7 @@ export interface Process {
   diasDesdeUltimaRevisao: number;
   dataEnvioRevisao: string;
   etapas: ProcessStep[];
+  historico: HistoricoEvento[];
 }
 
 export const mockProcesses: Process[] = [
@@ -85,6 +103,11 @@ export const mockProcesses: Process[] = [
         observacoes: "Ocorrência registrada e tratada",
       },
     ],
+    historico: [
+      { id: "h1-1", tipo: "criado", data: "01/03/2024", hora: "09:15", usuario: "Mariana Pereira Da Silva", observacao: "Processo cadastrado no sistema" },
+      { id: "h1-2", tipo: "chegou_revisao", data: "10/04/2025", hora: "14:32", usuario: "Mariana Pereira Da Silva", observacao: "Enviado para revisão anual" },
+      { id: "h1-3", tipo: "em_analise", data: "12/04/2025", hora: "10:05", usuario: "Equipe SECGOV", observacao: "Revisão iniciada pela SECGOV" },
+    ],
   },
   {
     id: "2",
@@ -108,6 +131,11 @@ export const mockProcesses: Process[] = [
       { id: 4, titulo: "Atividades de Controle", descricao: "Atividades de monitoramento", atividades: ["Monitoramento semanal de SLA", "Reunião mensal com fornecedor"], observacoes: "" },
       { id: 5, titulo: "Ocorrências de Risco", descricao: "Sem ocorrências registradas", ocorrencias: [], observacoes: "" },
     ],
+    historico: [
+      { id: "h2-1", tipo: "criado", data: "10/01/2024", hora: "11:00", usuario: "Carlos Eduardo Santos" },
+      { id: "h2-2", tipo: "ajuste_solicitado", data: "20/02/2025", hora: "16:40", usuario: "Equipe SECGOV", observacao: "Ajustar cláusulas de SLA" },
+      { id: "h2-3", tipo: "chegou_revisao", data: "01/04/2025", hora: "08:20", usuario: "Carlos Eduardo Santos", observacao: "Reenviado após ajustes" },
+    ],
   },
   {
     id: "3",
@@ -124,6 +152,12 @@ export const mockProcesses: Process[] = [
       { id: 3, titulo: "Resposta aos Riscos", descricao: "Respostas", respostas: ["Mitigar: Pesquisa ampla de mercado"], observacoes: "" },
       { id: 4, titulo: "Atividades de Controle", descricao: "Atividades", atividades: ["Checklist de conformidade", "Parecer jurídico obrigatório"], observacoes: "" },
       { id: 5, titulo: "Ocorrências de Risco", descricao: "Sem ocorrências", ocorrencias: [], observacoes: "" },
+    ],
+    historico: [
+      { id: "h3-1", tipo: "criado", data: "05/12/2023", hora: "10:30", usuario: "Ana Beatriz Lima" },
+      { id: "h3-2", tipo: "chegou_revisao", data: "20/02/2025", hora: "09:10", usuario: "Ana Beatriz Lima" },
+      { id: "h3-3", tipo: "revisado", data: "10/03/2025", hora: "15:25", usuario: "Equipe SECGOV", observacao: "Revisão concluída sem ressalvas" },
+      { id: "h3-4", tipo: "concluido", data: "15/03/2025", hora: "17:00", usuario: "Equipe SECGOV", observacao: "Processo aprovado" },
     ],
   },
   {
@@ -142,6 +176,11 @@ export const mockProcesses: Process[] = [
       { id: 4, titulo: "Atividades de Controle", descricao: "Atividades", atividades: ["Conferência trimestral"], observacoes: "" },
       { id: 5, titulo: "Ocorrências de Risco", descricao: "Sem ocorrências", ocorrencias: [], observacoes: "" },
     ],
+    historico: [
+      { id: "h4-1", tipo: "criado", data: "15/06/2024", hora: "13:45", usuario: "Roberto Almeida" },
+      { id: "h4-2", tipo: "chegou_revisao", data: "25/09/2024", hora: "10:00", usuario: "Roberto Almeida" },
+      { id: "h4-3", tipo: "ajuste_solicitado", data: "05/10/2024", hora: "14:20", usuario: "Equipe SECGOV", observacao: "Detalhar controles de inventário" },
+    ],
   },
   {
     id: "5",
@@ -158,6 +197,12 @@ export const mockProcesses: Process[] = [
       { id: 3, titulo: "Resposta aos Riscos", descricao: "Respostas", respostas: ["Mitigar: Sistema biométrico com geolocalização"], observacoes: "" },
       { id: 4, titulo: "Atividades de Controle", descricao: "Atividades", atividades: ["Relatório mensal de inconsistências"], observacoes: "" },
       { id: 5, titulo: "Ocorrências de Risco", descricao: "Sem ocorrências", ocorrencias: [], observacoes: "" },
+    ],
+    historico: [
+      { id: "h5-1", tipo: "criado", data: "20/08/2024", hora: "08:50", usuario: "Fernanda Costa" },
+      { id: "h5-2", tipo: "chegou_revisao", data: "20/01/2025", hora: "09:30", usuario: "Fernanda Costa" },
+      { id: "h5-3", tipo: "revisado", data: "10/02/2025", hora: "11:15", usuario: "Equipe SECGOV" },
+      { id: "h5-4", tipo: "concluido", data: "13/02/2025", hora: "16:40", usuario: "Equipe SECGOV", observacao: "Aprovado e arquivado" },
     ],
   },
 ];

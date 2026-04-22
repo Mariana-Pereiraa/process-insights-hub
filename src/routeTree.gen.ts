@@ -9,10 +9,16 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as NotificacoesRouteImport } from './routes/notificacoes'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as RevisaoProcessIdRouteImport } from './routes/revisao.$processId'
 import { Route as HistoricoProcessIdRouteImport } from './routes/historico.$processId'
 
+const NotificacoesRoute = NotificacoesRouteImport.update({
+  id: '/notificacoes',
+  path: '/notificacoes',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -31,36 +37,56 @@ const HistoricoProcessIdRoute = HistoricoProcessIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/notificacoes': typeof NotificacoesRoute
   '/historico/$processId': typeof HistoricoProcessIdRoute
   '/revisao/$processId': typeof RevisaoProcessIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/notificacoes': typeof NotificacoesRoute
   '/historico/$processId': typeof HistoricoProcessIdRoute
   '/revisao/$processId': typeof RevisaoProcessIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/notificacoes': typeof NotificacoesRoute
   '/historico/$processId': typeof HistoricoProcessIdRoute
   '/revisao/$processId': typeof RevisaoProcessIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/historico/$processId' | '/revisao/$processId'
+  fullPaths:
+    | '/'
+    | '/notificacoes'
+    | '/historico/$processId'
+    | '/revisao/$processId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/historico/$processId' | '/revisao/$processId'
-  id: '__root__' | '/' | '/historico/$processId' | '/revisao/$processId'
+  to: '/' | '/notificacoes' | '/historico/$processId' | '/revisao/$processId'
+  id:
+    | '__root__'
+    | '/'
+    | '/notificacoes'
+    | '/historico/$processId'
+    | '/revisao/$processId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  NotificacoesRoute: typeof NotificacoesRoute
   HistoricoProcessIdRoute: typeof HistoricoProcessIdRoute
   RevisaoProcessIdRoute: typeof RevisaoProcessIdRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/notificacoes': {
+      id: '/notificacoes'
+      path: '/notificacoes'
+      fullPath: '/notificacoes'
+      preLoaderRoute: typeof NotificacoesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -87,6 +113,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  NotificacoesRoute: NotificacoesRoute,
   HistoricoProcessIdRoute: HistoricoProcessIdRoute,
   RevisaoProcessIdRoute: RevisaoProcessIdRoute,
 }

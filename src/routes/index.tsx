@@ -114,7 +114,7 @@ function Dashboard() {
               >
                 <option value="todos">Todos os Status</option>
                 <option value="em_revisao">Revisão</option>
-                <option value="em_analise">Em análise</option>
+                <option value="em_analise">Análise</option>
                 <option value="concluido">Concluído</option>
               </select>
             </div>

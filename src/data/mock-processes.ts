@@ -47,8 +47,10 @@ export interface Process {
   id: string;
   nome: string;
   unidade: string;
+  unidadeSigla: string;
   setor: string;
   responsavel: string;
+  responsavelUsername: string;
   status: ProcessStatus;
   diasDesdeUltimaRevisao: number;
   dataEnvioRevisao: string;

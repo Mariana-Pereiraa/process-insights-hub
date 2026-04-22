@@ -47,8 +47,10 @@ export interface Process {
   id: string;
   nome: string;
   unidade: string;
+  unidadeSigla: string;
   setor: string;
   responsavel: string;
+  responsavelUsername: string;
   status: ProcessStatus;
   diasDesdeUltimaRevisao: number;
   dataEnvioRevisao: string;
@@ -61,8 +63,10 @@ export const mockProcesses: Process[] = [
     id: "1",
     nome: "Concessão de bolsas de estágio",
     unidade: "Gabinete do Reitor",
+    unidadeSigla: "GR",
     setor: "Gabinete do Reitor",
     responsavel: "Mariana Pereira Da Silva",
+    responsavelUsername: "mariana.silva",
     status: "em_analise",
     diasDesdeUltimaRevisao: 370,
     dataEnvioRevisao: "10/04/2025",
@@ -124,8 +128,10 @@ export const mockProcesses: Process[] = [
     id: "2",
     nome: "Gestão de contratos de TI",
     unidade: "Superintendência de TI",
+    unidadeSigla: "STI",
     setor: "Contratos",
     responsavel: "Carlos Eduardo Santos",
+    responsavelUsername: "carlos.santos",
     status: "em_revisao",
     diasDesdeUltimaRevisao: 380,
     dataEnvioRevisao: "01/04/2025",
@@ -157,8 +163,10 @@ export const mockProcesses: Process[] = [
     id: "3",
     nome: "Processo de licitação de obras",
     unidade: "Pró-Reitoria de Infraestrutura",
+    unidadeSigla: "PROINFRA",
     setor: "Licitações",
     responsavel: "Ana Beatriz Lima",
+    responsavelUsername: "ana.lima",
     status: "concluido",
     diasDesdeUltimaRevisao: 30,
     dataEnvioRevisao: "15/03/2025",
@@ -180,8 +188,10 @@ export const mockProcesses: Process[] = [
     id: "4",
     nome: "Gestão de patrimônio",
     unidade: "Pró-Reitoria de Administração",
+    unidadeSigla: "PROAD",
     setor: "Patrimônio",
     responsavel: "Roberto Almeida",
+    responsavelUsername: "roberto.almeida",
     status: "em_revisao",
     diasDesdeUltimaRevisao: 200,
     dataEnvioRevisao: "25/09/2024",
@@ -204,8 +214,10 @@ export const mockProcesses: Process[] = [
     id: "5",
     nome: "Controle de frequência de servidores",
     unidade: "Pró-Reitoria de Gestão de Pessoas",
+    unidadeSigla: "PROGEP",
     setor: "RH",
     responsavel: "Fernanda Costa",
+    responsavelUsername: "fernanda.costa",
     status: "concluido",
     diasDesdeUltimaRevisao: 60,
     dataEnvioRevisao: "13/02/2025",

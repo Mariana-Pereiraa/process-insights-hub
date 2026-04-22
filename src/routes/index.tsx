@@ -4,10 +4,8 @@ import { CircleChevronDown, RotateCcw, CheckCircle2, Search, Eye, History } from
 import { AppSidebar } from "@/components/AppSidebar";
 import { Topbar } from "@/components/Topbar";
 import { StatusBadge } from "@/components/StatusBadge";
-import { HistoricoTimeline } from "@/components/HistoricoTimeline";
-import { mockProcesses, type ProcessStatus, type Process } from "@/data/mock-processes";
+import { mockProcesses, type ProcessStatus } from "@/data/mock-processes";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 
 export const Route = createFileRoute("/")({
   component: Dashboard,
@@ -23,7 +21,7 @@ function Dashboard() {
   const [filterUnidade, setFilterUnidade] = useState("");
   const [filterStatus, setFilterStatus] = useState<"todos" | ProcessStatus>("todos");
   const [search, setSearch] = useState("");
-  const [historicoProcess, setHistoricoProcess] = useState<Process | null>(null);
+  
 
   const unidades = useMemo(() => [...new Set(mockProcesses.map((p) => p.unidade))], []);
 
@@ -145,15 +143,15 @@ function Dashboard() {
                       </td>
                       <td className="px-5 py-4">
                         <div className="flex items-center justify-end gap-2">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="gap-1.5"
-                            onClick={() => setHistoricoProcess(process)}
+                          <Link
+                            to="/historico/$processId"
+                            params={{ processId: process.id }}
                           >
-                            <History className="w-4 h-4" />
-                            Histórico
-                          </Button>
+                            <Button variant="outline" size="sm" className="gap-1.5">
+                              <History className="w-4 h-4" />
+                              Histórico
+                            </Button>
+                          </Link>
                           <Link
                             to="/revisao/$processId"
                             params={{ processId: process.id }}
@@ -180,30 +178,6 @@ function Dashboard() {
           </div>
         </main>
       </div>
-
-      {/* Modal de Histórico */}
-      <Dialog open={historicoProcess !== null} onOpenChange={(open) => !open && setHistoricoProcess(null)}>
-        <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
-          <DialogHeader>
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-                <History className="w-5 h-5 text-primary" />
-              </div>
-              <div className="text-left">
-                <DialogTitle>Histórico do Processo</DialogTitle>
-                <DialogDescription className="line-clamp-1">
-                  {historicoProcess?.nome}
-                </DialogDescription>
-              </div>
-            </div>
-          </DialogHeader>
-          <div className="mt-4">
-            {historicoProcess && (
-              <HistoricoTimeline eventos={historicoProcess.historico} />
-            )}
-          </div>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }

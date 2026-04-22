@@ -137,12 +137,12 @@ function Dashboard() {
                     <tr key={process.id} className="border-b border-border/50 hover:bg-muted/30 transition-colors">
                       <td className="px-5 py-4 text-sm font-medium text-foreground">{process.nome}</td>
                       <td className="px-5 py-4 text-sm text-muted-foreground">
-                        <span title={process.unidade} className="cursor-help border-b border-dotted border-muted-foreground/40">
+                        <span title={process.unidade} className="border-b border-dotted border-muted-foreground/40">
                           {process.unidadeSigla}
                         </span>
                       </td>
                       <td className="px-5 py-4 text-sm text-muted-foreground">
-                        <span title={process.responsavel} className="cursor-help border-b border-dotted border-muted-foreground/40">
+                        <span title={process.responsavel} className="border-b border-dotted border-muted-foreground/40">
                           {process.responsavelUsername}
                         </span>
                       </td>

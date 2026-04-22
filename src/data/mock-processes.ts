@@ -1,4 +1,4 @@
-export type ProcessStatus = "em_revisao" | "concluido";
+export type ProcessStatus = "em_revisao" | "em_analise" | "concluido";
 
 export type HistoricoTipo =
   | "criado"
@@ -60,7 +60,7 @@ export const mockProcesses: Process[] = [
     unidade: "Gabinete do Reitor",
     setor: "Gabinete do Reitor",
     responsavel: "Mariana Pereira Da Silva",
-    status: "em_revisao",
+    status: "em_analise",
     diasDesdeUltimaRevisao: 370,
     dataEnvioRevisao: "10/04/2025",
     etapas: [

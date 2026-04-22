@@ -146,36 +146,57 @@ function Dashboard() {
                     <th className="text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider px-5 py-3">Unidade</th>
                     <th className="text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider px-5 py-3">Responsável</th>
                     <th className="text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider px-5 py-3">Status</th>
+                    <th className="text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider px-5 py-3">Última ação</th>
                     <th className="text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider px-5 py-3">Envio</th>
                     <th className="text-right text-xs font-semibold text-muted-foreground uppercase tracking-wider px-5 py-3">Ação</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {filtered.map((process) => (
-                    <tr key={process.id} className="border-b border-border/50 hover:bg-muted/30 transition-colors">
-                      <td className="px-5 py-4 text-sm font-medium text-foreground">{process.nome}</td>
-                      <td className="px-5 py-4 text-sm text-muted-foreground">{process.unidade}</td>
-                      <td className="px-5 py-4 text-sm text-muted-foreground">{process.responsavel}</td>
-                      <td className="px-5 py-4"><StatusBadge status={process.status} /></td>
-                      <td className="px-5 py-4 text-sm text-muted-foreground">
-                        {process.dataEnvioRevisao}
-                      </td>
-                      <td className="px-5 py-4 text-right">
-                        <Link
-                          to="/revisao/$processId"
-                          params={{ processId: process.id }}
-                        >
-                          <Button variant="outline" size="sm" className="gap-1.5">
-                            <Eye className="w-4 h-4" />
-                            Revisar
-                          </Button>
-                        </Link>
-                      </td>
-                    </tr>
-                  ))}
+                  {filtered.map((process) => {
+                    const ultima = getUltimaAcao(process.historico);
+                    const cfg = ultima ? ultimaAcaoConfig[ultima.tipo] : null;
+                    const UltimaIcon = cfg?.Icon;
+                    return (
+                      <tr key={process.id} className="border-b border-border/50 hover:bg-muted/30 transition-colors">
+                        <td className="px-5 py-4 text-sm font-medium text-foreground">{process.nome}</td>
+                        <td className="px-5 py-4 text-sm text-muted-foreground">{process.unidade}</td>
+                        <td className="px-5 py-4 text-sm text-muted-foreground">{process.responsavel}</td>
+                        <td className="px-5 py-4"><StatusBadge status={process.status} /></td>
+                        <td className="px-5 py-4">
+                          {ultima && cfg && UltimaIcon ? (
+                            <div className="flex items-center gap-2">
+                              <span className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-medium ${cfg.className}`}>
+                                <UltimaIcon className="w-3.5 h-3.5" />
+                                {cfg.label}
+                              </span>
+                              <span className="text-xs text-muted-foreground tabular-nums whitespace-nowrap">
+                                {ultima.data}
+                              </span>
+                            </div>
+                          ) : (
+                            <span className="text-xs text-muted-foreground">—</span>
+                          )}
+                        </td>
+                        <td className="px-5 py-4 text-sm text-muted-foreground">
+                          {process.dataEnvioRevisao}
+                        </td>
+                        <td className="px-5 py-4 text-right">
+                          <Link
+                            to="/revisao/$processId"
+                            params={{ processId: process.id }}
+                          >
+                            <Button variant="outline" size="sm" className="gap-1.5">
+                              <Eye className="w-4 h-4" />
+                              Revisar
+                            </Button>
+                          </Link>
+                        </td>
+                      </tr>
+                    );
+                  })}
                   {filtered.length === 0 && (
                     <tr>
-                      <td colSpan={6} className="px-5 py-12 text-center text-muted-foreground text-sm">
+                      <td colSpan={7} className="px-5 py-12 text-center text-muted-foreground text-sm">
                         Nenhum processo encontrado.
                       </td>
                     </tr>

@@ -1,31 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState, useMemo } from "react";
-import { CircleChevronDown, RotateCcw, CheckCircle2, Search, Eye, Inbox, AlertTriangle, FileSignature, Search as SearchIcon } from "lucide-react";
+import { CircleChevronDown, RotateCcw, CheckCircle2, Search, Eye, History } from "lucide-react";
 import { AppSidebar } from "@/components/AppSidebar";
 import { Topbar } from "@/components/Topbar";
 import { StatusBadge } from "@/components/StatusBadge";
-import { mockProcesses, type ProcessStatus, type HistoricoTipo, type HistoricoEvento } from "@/data/mock-processes";
+import { HistoricoTimeline } from "@/components/HistoricoTimeline";
+import { mockProcesses, type ProcessStatus, type Process } from "@/data/mock-processes";
 import { Button } from "@/components/ui/button";
-
-const ultimaAcaoConfig: Record<HistoricoTipo, { label: string; Icon: typeof Inbox; className: string }> = {
-  criado: { label: "Criado", Icon: FileSignature, className: "bg-slate-100 text-slate-700" },
-  chegou_revisao: { label: "Chegou para revisão", Icon: Inbox, className: "bg-blue-100 text-blue-700" },
-  em_analise: { label: "Em análise", Icon: SearchIcon, className: "bg-indigo-100 text-indigo-700" },
-  ajuste_solicitado: { label: "Foi para ajuste", Icon: AlertTriangle, className: "bg-amber-100 text-amber-700" },
-  revisado: { label: "Foi revisado", Icon: Eye, className: "bg-violet-100 text-violet-700" },
-  concluido: { label: "Foi concluído", Icon: CheckCircle2, className: "bg-emerald-100 text-emerald-700" },
-};
-
-function toTs(e: HistoricoEvento): number {
-  const [d, m, y] = e.data.split("/").map(Number);
-  const [hh, mm] = e.hora.split(":").map(Number);
-  return new Date(y, (m ?? 1) - 1, d ?? 1, hh ?? 0, mm ?? 0).getTime();
-}
-
-function getUltimaAcao(historico: HistoricoEvento[]): HistoricoEvento | null {
-  if (!historico || historico.length === 0) return null;
-  return [...historico].sort((a, b) => toTs(b) - toTs(a))[0];
-}
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 
 export const Route = createFileRoute("/")({
   component: Dashboard,

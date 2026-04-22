@@ -8,6 +8,8 @@ export type HistoricoTipo =
   | "revisado"
   | "concluido"
   | "em_ajuste"
+  | "em_ajuste_anual"
+  | "em_analise_anual"
   | "pendente_revisao_anual"
   | "ajuste_anual_solicitado";
 

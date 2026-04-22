@@ -61,6 +61,7 @@ export const mockProcesses: Process[] = [
     setor: "Gabinete do Reitor",
     responsavel: "Mariana Pereira Da Silva",
     status: "em_analise",
+    diasDesdeUltimaRevisao: 370,
     dataEnvioRevisao: "10/04/2025",
     etapas: [
       {

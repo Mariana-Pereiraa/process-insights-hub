@@ -80,7 +80,7 @@ function Dashboard() {
                 <CheckCircle2 className="w-7 h-7 text-emerald-600" />
               </div>
               <div>
-                <p className="text-sm font-medium text-muted-foreground">Concluídos</p>
+                <p className="text-sm font-medium text-muted-foreground">Aguardando revisão anual</p>
                 <p className="text-3xl font-bold !text-black">{totalConcluido}</p>
               </div>
             </div>

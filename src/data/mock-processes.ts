@@ -1,5 +1,3 @@
-export type ProcessStatus = "em_revisao" | "em_analise" | "concluido";
-
 export type HistoricoTipo =
   | "criado"
   | "chegou_revisao"
@@ -12,6 +10,8 @@ export type HistoricoTipo =
   | "em_analise_anual"
   | "pendente_revisao_anual"
   | "ajuste_anual_solicitado";
+
+export type ProcessStatus = "em_revisao" | HistoricoTipo;
 
 export interface HistoricoEvento {
   id: string;

@@ -1,11 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState, useMemo } from "react";
-import { CircleChevronDown, RotateCcw, CheckCircle2, Search, Eye, History } from "lucide-react";
+import { CircleChevronDown, RotateCcw, CheckCircle2, Search, ClipboardList, History } from "lucide-react";
 import { AppSidebar } from "@/components/AppSidebar";
 import { Topbar } from "@/components/Topbar";
 import { StatusBadge } from "@/components/StatusBadge";
 import { mockProcesses, type ProcessStatus } from "@/data/mock-processes";
 import { Button } from "@/components/ui/button";
+import { processStatusOptions } from "@/lib/process-status";
 
 export const Route = createFileRoute("/")({
   component: Dashboard,
@@ -113,9 +114,11 @@ function Dashboard() {
                 className="px-4 py-2.5 rounded-xl border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring"
               >
                 <option value="todos">Todos os Status</option>
-                <option value="em_revisao">Revisão</option>
-                <option value="em_analise">Análise</option>
-                <option value="concluido">Concluído</option>
+                {processStatusOptions.map((status) => (
+                  <option key={status.value} value={status.value}>
+                    {status.label}
+                  </option>
+                ))}
               </select>
             </div>
 
@@ -158,7 +161,6 @@ function Dashboard() {
                           >
                             <Button variant="outline" size="sm" className="gap-1.5">
                               <History className="w-4 h-4" />
-                              Histórico
                             </Button>
                           </Link>
                           <Link
@@ -166,7 +168,7 @@ function Dashboard() {
                             params={{ processId: process.id }}
                           >
                             <Button variant="outline" size="sm" className="gap-1.5">
-                              <Eye className="w-4 h-4" />
+                              <ClipboardList className="w-4 h-4" />
                               Revisar
                             </Button>
                           </Link>

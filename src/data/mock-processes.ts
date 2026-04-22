@@ -1,5 +1,22 @@
 export type ProcessStatus = "em_revisao" | "concluido";
 
+export type HistoricoTipo =
+  | "criado"
+  | "chegou_revisao"
+  | "em_analise"
+  | "ajuste_solicitado"
+  | "revisado"
+  | "concluido";
+
+export interface HistoricoEvento {
+  id: string;
+  tipo: HistoricoTipo;
+  data: string; // dd/mm/aaaa
+  hora: string; // HH:MM
+  usuario?: string;
+  observacao?: string;
+}
+
 export interface Risk {
   id: string;
   nome: string;
@@ -33,6 +50,7 @@ export interface Process {
   diasDesdeUltimaRevisao: number;
   dataEnvioRevisao: string;
   etapas: ProcessStep[];
+  historico: HistoricoEvento[];
 }
 
 export const mockProcesses: Process[] = [

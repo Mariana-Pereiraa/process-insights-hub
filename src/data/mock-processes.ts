@@ -6,7 +6,11 @@ export type HistoricoTipo =
   | "em_analise"
   | "ajuste_solicitado"
   | "revisado"
-  | "concluido";
+  | "concluido"
+  | "em_ajuste"
+  | "pendente_revisao_anual"
+  | "ajuste_anual_solicitado"
+  | "aguardando_revisao_anual";
 
 export interface HistoricoEvento {
   id: string;

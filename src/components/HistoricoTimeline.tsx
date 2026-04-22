@@ -49,6 +49,18 @@ const tipoConfig: Record<HistoricoTipo, {
     iconClass: "bg-orange-100 text-orange-700",
     ringClass: "ring-orange-200",
   },
+  em_ajuste_anual: {
+    label: "Em ajuste anual",
+    Icon: Wrench,
+    iconClass: "bg-orange-100 text-orange-700",
+    ringClass: "ring-orange-200",
+  },
+  em_analise_anual: {
+    label: "Em análise anual",
+    Icon: Search,
+    iconClass: "bg-indigo-100 text-indigo-700",
+    ringClass: "ring-indigo-200",
+  },
   pendente_revisao_anual: {
     label: "Pendente de revisão anual",
     Icon: CalendarClock,

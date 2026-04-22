@@ -1,4 +1,4 @@
-import { Inbox, AlertTriangle, Eye, CheckCircle2, FileSignature, Search, Wrench, CalendarClock, CalendarX, Hourglass } from "lucide-react";
+import { Inbox, AlertTriangle, Eye, CheckCircle2, FileSignature, Search, Wrench, CalendarClock, CalendarX } from "lucide-react";
 import type { HistoricoEvento, HistoricoTipo } from "@/data/mock-processes";
 
 const tipoConfig: Record<HistoricoTipo, {
@@ -60,12 +60,6 @@ const tipoConfig: Record<HistoricoTipo, {
     Icon: CalendarX,
     iconClass: "bg-rose-100 text-rose-700",
     ringClass: "ring-rose-200",
-  },
-  aguardando_revisao_anual: {
-    label: "Aguardando revisão anual",
-    Icon: Hourglass,
-    iconClass: "bg-teal-100 text-teal-700",
-    ringClass: "ring-teal-200",
   },
 };
 

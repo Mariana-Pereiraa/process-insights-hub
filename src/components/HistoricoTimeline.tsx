@@ -20,7 +20,7 @@ const tipoConfig: Record<HistoricoTipo, {
     ringClass: "ring-blue-200",
   },
   em_analise: {
-    label: "Análise",
+    label: "Em análise",
     Icon: Search,
     iconClass: "bg-indigo-100 text-indigo-700",
     ringClass: "ring-indigo-200",

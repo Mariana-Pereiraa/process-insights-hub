@@ -77,7 +77,7 @@ function HistoricoPage() {
             </div>
 
             <div className="bg-card rounded-2xl border border-border shadow-sm p-6">
-              <h2 className="text-lg font-semibold text-foreground mb-5">Linha do tempo</h2>
+              <h2 className="text-lg font-semibold text-foreground mb-5">Histórico do processo</h2>
               <HistoricoTimeline eventos={process.historico} />
             </div>
           </div>

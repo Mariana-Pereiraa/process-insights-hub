@@ -8,7 +8,7 @@ const statusConfig: Record<ProcessStatus, { label: string; className: string; do
     dotClass: "bg-status-review",
   },
   em_analise: {
-    label: "Em análise",
+    label: "Análise",
     className: "bg-indigo-100 text-indigo-700",
     dotClass: "bg-indigo-600",
   },

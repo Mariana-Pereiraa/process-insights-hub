@@ -105,8 +105,14 @@ export const mockProcesses: Process[] = [
     ],
     historico: [
       { id: "h1-1", tipo: "criado", data: "01/03/2024", hora: "09:15", usuario: "Mariana Pereira Da Silva", observacao: "Processo cadastrado no sistema" },
-      { id: "h1-2", tipo: "chegou_revisao", data: "10/04/2025", hora: "14:32", usuario: "Mariana Pereira Da Silva", observacao: "Enviado para revisão anual" },
-      { id: "h1-3", tipo: "em_analise", data: "12/04/2025", hora: "10:05", usuario: "Equipe SECGOV", observacao: "Revisão iniciada pela SECGOV" },
+      { id: "h1-2", tipo: "chegou_revisao", data: "15/03/2024", hora: "10:00", usuario: "Mariana Pereira Da Silva", observacao: "Primeira revisão enviada" },
+      { id: "h1-3", tipo: "em_analise", data: "16/03/2024", hora: "09:00", usuario: "Equipe SECGOV" },
+      { id: "h1-4", tipo: "ajuste_solicitado", data: "20/03/2024", hora: "15:10", usuario: "Equipe SECGOV", observacao: "Detalhar identificação de riscos" },
+      { id: "h1-5", tipo: "chegou_revisao", data: "28/03/2024", hora: "11:20", usuario: "Mariana Pereira Da Silva", observacao: "Reenviado após ajustes" },
+      { id: "h1-6", tipo: "revisado", data: "02/04/2024", hora: "14:00", usuario: "Equipe SECGOV", observacao: "Revisão aprovada" },
+      { id: "h1-7", tipo: "concluido", data: "05/04/2024", hora: "17:30", usuario: "Equipe SECGOV", observacao: "Ciclo anterior concluído" },
+      { id: "h1-8", tipo: "chegou_revisao", data: "10/04/2025", hora: "14:32", usuario: "Mariana Pereira Da Silva", observacao: "Nova revisão anual enviada" },
+      { id: "h1-9", tipo: "em_analise", data: "12/04/2025", hora: "10:05", usuario: "Equipe SECGOV", observacao: "Revisão iniciada pela SECGOV" },
     ],
   },
   {
@@ -132,9 +138,14 @@ export const mockProcesses: Process[] = [
       { id: 5, titulo: "Ocorrências de Risco", descricao: "Sem ocorrências registradas", ocorrencias: [], observacoes: "" },
     ],
     historico: [
-      { id: "h2-1", tipo: "criado", data: "10/01/2024", hora: "11:00", usuario: "Carlos Eduardo Santos" },
-      { id: "h2-2", tipo: "ajuste_solicitado", data: "20/02/2025", hora: "16:40", usuario: "Equipe SECGOV", observacao: "Ajustar cláusulas de SLA" },
-      { id: "h2-3", tipo: "chegou_revisao", data: "01/04/2025", hora: "08:20", usuario: "Carlos Eduardo Santos", observacao: "Reenviado após ajustes" },
+      { id: "h2-1", tipo: "criado", data: "10/01/2024", hora: "11:00", usuario: "Carlos Eduardo Santos", observacao: "Processo cadastrado" },
+      { id: "h2-2", tipo: "chegou_revisao", data: "20/01/2024", hora: "09:30", usuario: "Carlos Eduardo Santos" },
+      { id: "h2-3", tipo: "revisado", data: "05/02/2024", hora: "10:15", usuario: "Equipe SECGOV" },
+      { id: "h2-4", tipo: "concluido", data: "08/02/2024", hora: "16:00", usuario: "Equipe SECGOV", observacao: "Primeiro ciclo concluído" },
+      { id: "h2-5", tipo: "chegou_revisao", data: "10/02/2025", hora: "08:00", usuario: "Carlos Eduardo Santos", observacao: "Nova revisão anual" },
+      { id: "h2-6", tipo: "em_analise", data: "12/02/2025", hora: "09:00", usuario: "Equipe SECGOV" },
+      { id: "h2-7", tipo: "ajuste_solicitado", data: "20/02/2025", hora: "16:40", usuario: "Equipe SECGOV", observacao: "Ajustar cláusulas de SLA" },
+      { id: "h2-8", tipo: "chegou_revisao", data: "01/04/2025", hora: "08:20", usuario: "Carlos Eduardo Santos", observacao: "Reenviado após ajustes" },
     ],
   },
   {
@@ -179,7 +190,9 @@ export const mockProcesses: Process[] = [
     historico: [
       { id: "h4-1", tipo: "criado", data: "15/06/2024", hora: "13:45", usuario: "Roberto Almeida" },
       { id: "h4-2", tipo: "chegou_revisao", data: "25/09/2024", hora: "10:00", usuario: "Roberto Almeida" },
-      { id: "h4-3", tipo: "ajuste_solicitado", data: "05/10/2024", hora: "14:20", usuario: "Equipe SECGOV", observacao: "Detalhar controles de inventário" },
+      { id: "h4-3", tipo: "em_analise", data: "28/09/2024", hora: "09:15", usuario: "Equipe SECGOV" },
+      { id: "h4-4", tipo: "ajuste_solicitado", data: "05/10/2024", hora: "14:20", usuario: "Equipe SECGOV", observacao: "Detalhar controles de inventário" },
+      { id: "h4-5", tipo: "chegou_revisao", data: "18/10/2024", hora: "11:00", usuario: "Roberto Almeida", observacao: "Voltou do ajuste — reenviado para revisão" },
     ],
   },
   {

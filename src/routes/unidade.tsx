@@ -182,7 +182,7 @@ function UnidadePage() {
                             Histórico
                           </Button>
                         </Link>
-                        <Link to="/revisao/$processId" params={{ processId: p.id }}>
+                        <Link to="/historico/$processId" params={{ processId: p.id }}>
                           <Button size="sm" className="gap-1.5 bg-amber-600 hover:bg-amber-700">
                             <ClipboardList className="w-4 h-4" />
                             Realizar ajuste
@@ -351,7 +351,7 @@ function ProcessoCard({
                 <History className="w-4 h-4" /> Ver histórico
               </Button>
             </Link>
-            <Link to="/revisao/$processId" params={{ processId: processo.id }}>
+            <Link to="/historico/$processId" params={{ processId: processo.id }}>
               <Button size="sm" className="gap-1.5">
                 <Eye className="w-4 h-4" />
                 {precisaAjuste ? "Realizar ajuste" : "Abrir processo"}

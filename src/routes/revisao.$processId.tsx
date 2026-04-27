@@ -1,5 +1,6 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { createFileRoute, Link, Navigate, notFound } from "@tanstack/react-router";
 import { useState } from "react";
+import { useProfile } from "@/contexts/ProfileContext";
 import { ArrowLeft, ChevronDown, ChevronRight, AlertTriangle, CheckCircle2, FileText, Shield, Activity, AlertCircle, History, MoreVertical, ClipboardList } from "lucide-react";
 import { AppSidebar } from "@/components/AppSidebar";
 import { Topbar } from "@/components/Topbar";
@@ -34,6 +35,10 @@ const stepIcons = [FileText, Shield, AlertTriangle, Activity, AlertCircle];
 
 function ProcessReview() {
   const process = Route.useLoaderData() as import("@/data/mock-processes").Process;
+  const { profile } = useProfile();
+  if (profile.role === "unidade") {
+    return <Navigate to="/historico/$processId" params={{ processId: process.id }} replace />;
+  }
   const [openSteps, setOpenSteps] = useState<Set<number>>(new Set([1]));
   const [observacaoRevisor, setObservacaoRevisor] = useState("");
   const [submitted, setSubmitted] = useState<"aceito" | "ajustes" | null>(null);

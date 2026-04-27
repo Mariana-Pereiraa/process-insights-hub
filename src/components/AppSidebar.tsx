@@ -1,35 +1,32 @@
 import { Link, useLocation } from "@tanstack/react-router";
-import { Home, FileText, BarChart3, Building2, Users, LogOut, ShieldCheck } from "lucide-react";
-
-const navGroups = [
-  {
-    label: "Início",
-    items: [{ title: "Início", url: "/", icon: Home }],
-  },
-  {
-    label: "Acompanhamento",
-    items: [{ title: "Acompanhamento", url: "/", icon: ShieldCheck }],
-  },
-  {
-    label: "Processos",
-    items: [{ title: "Processos", url: "/processos", icon: FileText }],
-  },
-  {
-    label: "Relatórios",
-    items: [{ title: "Relatórios", url: "/relatorios", icon: BarChart3 }],
-  },
-  {
-    label: "Unidades",
-    items: [
-      { title: "Unidades", url: "/unidades", icon: Building2 },
-      { title: "Usuários", url: "/usuarios", icon: Users },
-    ],
-  },
-];
+import { Home, FileText, BarChart3, Building2, Users, LogOut, ShieldCheck, Inbox } from "lucide-react";
+import { useProfile } from "@/contexts/ProfileContext";
 
 export function AppSidebar() {
   const location = useLocation();
   const currentPath = location.pathname;
+  const { profile } = useProfile();
+
+  const navGroups =
+    profile.role === "secgov"
+      ? [
+          { label: "Início", items: [{ title: "Início", url: "/", icon: Home }] },
+          { label: "Acompanhamento", items: [{ title: "Acompanhamento", url: "/", icon: ShieldCheck }] },
+          { label: "Processos", items: [{ title: "Processos", url: "/processos", icon: FileText }] },
+          { label: "Relatórios", items: [{ title: "Relatórios", url: "/relatorios", icon: BarChart3 }] },
+          {
+            label: "Unidades",
+            items: [
+              { title: "Unidades", url: "/unidades", icon: Building2 },
+              { title: "Usuários", url: "/usuarios", icon: Users },
+            ],
+          },
+        ]
+      : [
+          { label: "Início", items: [{ title: "Início", url: "/unidade", icon: Home }] },
+          { label: "Minha Unidade", items: [{ title: "Minha Unidade", url: "/unidade", icon: Inbox }] },
+          { label: "Processos", items: [{ title: "Meus processos", url: "/unidade", icon: FileText }] },
+        ];
 
   return (
     <aside className="flex flex-col w-60 min-h-screen bg-sidebar-bg text-sidebar-foreground shrink-0">
@@ -41,8 +38,8 @@ export function AppSidebar() {
           </div>
         </div>
         <h1 className="text-lg font-bold mt-2">Gestão de Riscos</h1>
-        <p className="text-xs text-sidebar-foreground/60">Gabinete do Reitor</p>
-        <p className="text-xs text-sidebar-foreground/60">GAB-UFC</p>
+        <p className="text-xs text-sidebar-foreground/60">{profile.unidadeNome}</p>
+        <p className="text-xs text-sidebar-foreground/60">{profile.unidadeSigla}</p>
       </div>
 
       {/* Navigation */}

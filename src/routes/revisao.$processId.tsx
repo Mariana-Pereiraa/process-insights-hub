@@ -1,6 +1,6 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useState } from "react";
-import { ArrowLeft, ChevronDown, ChevronRight, AlertTriangle, CheckCircle2, FileText, Shield, Activity, AlertCircle, History } from "lucide-react";
+import { ArrowLeft, ChevronDown, ChevronRight, AlertTriangle, CheckCircle2, FileText, Shield, Activity, AlertCircle, History, MoreVertical, ClipboardList } from "lucide-react";
 import { AppSidebar } from "@/components/AppSidebar";
 import { Topbar } from "@/components/Topbar";
 import { StatusBadge } from "@/components/StatusBadge";
@@ -37,6 +37,11 @@ function ProcessReview() {
   const [openSteps, setOpenSteps] = useState<Set<number>>(new Set([1]));
   const [observacaoRevisor, setObservacaoRevisor] = useState("");
   const [submitted, setSubmitted] = useState<"aceito" | "ajustes" | null>(null);
+  const [showActionsMenu, setShowActionsMenu] = useState(false);
+const [statusAtual, setStatusAtual] = useState(process.status);
+const [revisaoIniciada, setRevisaoIniciada] = useState(
+  process.status === "em_analise"
+);
 
   const toggleStep = (id: number) => {
     setOpenSteps((prev) => {
@@ -80,9 +85,64 @@ function ProcessReview() {
                   </div>
                 </div>
               </div>
-              <StatusBadge status={process.status} />
-            </div>
-          </div>
+              <div className="flex flex-col items-end gap-3">
+  <StatusBadge status={statusAtual} />
+
+  {!revisaoIniciada ? (
+    <Button
+      onClick={() => {
+        setStatusAtual("em_analise");
+        setRevisaoIniciada(true);
+      }}
+      className="gap-2"
+      variant="outline"
+    >
+      <ClipboardList className="w-4 h-4" />
+      Iniciar Revisão
+    </Button>
+  ) : (
+    <div className="relative">
+      <Button
+        variant="outline"
+        onClick={() => setShowActionsMenu(!showActionsMenu)}
+        className="gap-2"
+      >
+        <ClipboardList className="w-4 h-4" />
+        Finalizar Revisão
+      </Button>
+
+      {showActionsMenu && (
+        <div className="absolute right-0 mt-2 w-56 rounded-xl border border-border bg-card shadow-lg z-50 p-2">
+          <button
+            onClick={() => {
+              setSubmitted("aceito");
+              setStatusAtual("concluido");
+              setShowActionsMenu(false);
+            }}
+            className="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-muted text-left text-sm"
+          >
+            <CheckCircle2 className="w-4 h-4 text-status-done" />
+            Processo concluído
+          </button>
+
+          <button
+            onClick={() => {
+              setSubmitted("ajustes");
+              setStatusAtual("em_ajuste");
+              setShowActionsMenu(false);
+            }}
+            className="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-muted text-left text-sm"
+          >
+            <AlertTriangle className="w-4 h-4 text-status-review" />
+            Solicitar ajuste
+          </button>
+        </div>
+      )}
+    </div>
+  )}
+</div>
+  </div>
+</div>
 
           {/* Steps navigation */}
           <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-6">

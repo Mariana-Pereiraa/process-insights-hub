@@ -1,9 +1,9 @@
 import type { ProcessStatus } from "@/data/mock-processes";
 
-export const processStatusConfig: Record<
+export const processStatusConfig: Partial<Record<
   ProcessStatus,
   { label: string; className: string; dotClass: string }
-> = {
+>> & Record<string, { label: string; className: string; dotClass: string }> = {
   em_revisao: {
     label: "Revisão",
     className: "bg-status-review-bg text-status-review",

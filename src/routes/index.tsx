@@ -1,12 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState, useMemo } from "react";
-import { CircleChevronDown, RotateCcw, CheckCircle2, Search, ClipboardList, History } from "lucide-react";
+import { CircleChevronDown, RotateCcw, CheckCircle2, Search, ClipboardList, History, Pencil, Trash2 } from "lucide-react";
 import { AppSidebar } from "@/components/AppSidebar";
 import { Topbar } from "@/components/Topbar";
 import { StatusBadge } from "@/components/StatusBadge";
 import { mockProcesses, type ProcessStatus } from "@/data/mock-processes";
 import { Button } from "@/components/ui/button";
 import { processStatusOptions } from "@/lib/process-status";
+import { useProfile } from "@/contexts/ProfileContext";
 
 export const Route = createFileRoute("/")({
   component: Dashboard,
@@ -19,34 +20,60 @@ export const Route = createFileRoute("/")({
 });
 
 function Dashboard() {
+  const { profile } = useProfile();
   const [filterUnidade, setFilterUnidade] = useState("");
   const [filterStatus, setFilterStatus] = useState<"todos" | ProcessStatus>("todos");
   const [search, setSearch] = useState("");
+  const [processToDelete, setProcessToDelete] = useState<string | null>(null);
   
 
   const unidades = useMemo(() => [...new Set(mockProcesses.map((p) => p.unidade))], []);
 
   const sorted = useMemo(() => {
     return [...mockProcesses].sort((a, b) => {
-      // Pending review first, then by days since last review (desc)
+      // PRIORIDADE ESPECIAL:
+      // Se for Gabinete do Reitor, processos em ajuste aparecem primeiro
+      if (profile.role === "unidade" && profile.unidadeNome === "Gabinete do Reitor") {
+        if (a.status === "em_ajuste" && b.status !== "em_ajuste") return -1;
+        if (a.status !== "em_ajuste" && b.status === "em_ajuste") return 1;
+      }
+  
+      // Depois processos em revisão
       if (a.status === "em_revisao" && b.status !== "em_revisao") return -1;
       if (a.status !== "em_revisao" && b.status === "em_revisao") return 1;
+  
+      // Depois ordena pelos dias desde última revisão
       return b.diasDesdeUltimaRevisao - a.diasDesdeUltimaRevisao;
     });
-  }, []);
+  }, [profile]);
 
   const filtered = useMemo(() => {
     return sorted.filter((p) => {
       if (filterUnidade && p.unidade !== filterUnidade) return false;
+  
       if (filterStatus !== "todos" && p.status !== filterStatus) return false;
-      if (search && !p.nome.toLowerCase().includes(search.toLowerCase())) return false;
+  
+      if (
+        search &&
+        !p.nome.toLowerCase().includes(search.toLowerCase())
+      ) {
+        return false;
+      }
+  
       return true;
     });
-  }, [sorted, filterUnidade, filterStatus, search]);
+  }, [
+    sorted,
+    filterUnidade,
+    filterStatus,
+    search,
+  ]);
 
   const totalRevisao = mockProcesses.filter((p) => p.status === "em_revisao").length;
   const totalConcluido = mockProcesses.filter((p) => p.status === "concluido").length;
-  const totalDevolvido = 0; // placeholder — sem status "devolvido" nos dados mock
+  const totalDevolvido = mockProcesses.filter(
+    (p) => p.status === "em_ajuste"
+  ).length;// placeholder — sem status "devolvido" nos dados mock
 
   return (
     <div className="flex min-h-screen w-full bg-background">
@@ -137,8 +164,17 @@ function Dashboard() {
                 </thead>
                 <tbody>
                   {filtered.map((process) => (
-                    <tr key={process.id} className="border-b border-border/50 hover:bg-muted/30 transition-colors">
-                      <td className="px-5 py-4 text-sm font-medium text-foreground">{process.nome}</td>
+                    <tr
+                      key={process.id}
+                      className={`border-b border-border/50 transition-colors hover:bg-muted/30 ${
+                        profile.role === "unidade" &&
+                        profile.unidadeNome === "Gabinete do Reitor" &&
+                        process.status === "em_ajuste"
+                          ? "bg-amber-50 border-l-4 border-l-amber-500"
+                          : ""
+                      }`}
+                    >    
+                    <td className="px-5 py-4 text-sm font-medium text-foreground">{process.nome}</td>
                       <td className="px-5 py-4 text-sm text-muted-foreground">
                         <span title={process.unidade} className="border-b border-dotted border-muted-foreground/40">
                           {process.unidadeSigla}
@@ -155,6 +191,8 @@ function Dashboard() {
                       </td>
                       <td className="px-5 py-4">
                         <div className="flex items-center justify-end gap-2">
+
+                          {/* Histórico aparece para ambos */}
                           <Link
                             to="/historico/$processId"
                             params={{ processId: process.id }}
@@ -163,15 +201,48 @@ function Dashboard() {
                               <History className="w-4 h-4" />
                             </Button>
                           </Link>
-                          <Link
-                            to="/revisao/$processId"
-                            params={{ processId: process.id }}
-                          >
-                            <Button variant="outline" size="sm" className="gap-1.5">
-                              <ClipboardList className="w-4 h-4" />
-                              Revisar
-                            </Button>
-                          </Link>
+
+                          {/* SECGOV */}
+                          {profile.role === "secgov" && (
+                            <Link
+                              to="/revisao/$processId"
+                              params={{ processId: process.id }}
+                            >
+                              <Button variant="outline" size="sm" className="gap-1.5">
+                                <ClipboardList className="w-4 h-4" />
+                                Revisar
+                              </Button>
+                            </Link>
+                          )}
+
+                          {/* Unidade */}
+                          {profile.role === "unidade" && (
+                            <>
+                              <Link
+                                to="/revisao/$processId"
+                                params={{ processId: process.id }}
+                              >
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="gap-1.5"
+                                >
+                                  <Pencil className="w-4 h-4" />
+                                  Editar
+                                </Button>
+                              </Link>
+
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setProcessToDelete(process.id)}
+                                className="gap-1.5 border-red-200 text-red-600 hover:bg-red-50"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                                Excluir
+                              </Button>
+                            </>
+                          )}
                         </div>
                       </td>
                     </tr>
@@ -187,6 +258,40 @@ function Dashboard() {
               </table>
             </div>
           </div>
+          
+          {processToDelete && (
+            <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+              <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl">
+                <h2 className="text-lg font-bold mb-2">
+                  Confirmar exclusão
+                </h2>
+
+                <p className="text-sm text-muted-foreground mb-6">
+                  Tem certeza que deseja excluir este processo?
+                  Essa ação não poderá ser desfeita.
+                </p>
+
+                <div className="flex justify-end gap-3">
+                  <Button
+                    variant="outline"
+                    onClick={() => setProcessToDelete(null)}
+                  >
+                    Cancelar
+                  </Button>
+
+                  <Button
+                    onClick={() => {
+                      console.log("Excluir processo:", processToDelete);
+                      setProcessToDelete(null);
+                    }}
+                    className="bg-red-600 hover:bg-red-700 text-white"
+                  >
+                    Confirmar Exclusão
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
         </main>
       </div>
     </div>

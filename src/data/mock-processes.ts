@@ -111,6 +111,7 @@ export const mockProcesses: Process[] = [
         ocorrencias: ["15/01/2025 - Atraso de 5 dias na publicação do edital (resolvido)"],
         observacoes: "Ocorrência registrada e tratada",
       },
+
     ],
     historico: [
       { id: "h1-1", tipo: "criado", data: "01/03/2024", hora: "09:15", usuario: "Mariana Pereira Da Silva", observacao: "Processo cadastrado no sistema" },
@@ -237,4 +238,117 @@ export const mockProcesses: Process[] = [
       { id: "h5-4", tipo: "concluido", data: "13/02/2025", hora: "16:40", usuario: "Equipe SECGOV", observacao: "Aprovado e arquivado" },
     ],
   },
+  {
+    id: "6",
+    nome: "Gestão de convênios institucionais",
+    unidade: "Gabinete do Reitor",
+    unidadeSigla: "GR",
+    setor: "Convênios",
+    responsavel: "Mariana Pereira Da Silva",
+    responsavelUsername: "mariana.silva",
+    status: "em_ajuste",
+    diasDesdeUltimaRevisao: 15,
+    dataEnvioRevisao: "20/04/2025",
+    etapas: [
+      {
+        id: 1,
+        titulo: "Identificação de Riscos",
+        descricao: "Levantamento de riscos relacionados aos convênios institucionais",
+        riscos: [
+          {
+            id: "r7",
+            nome: "Atraso na formalização do convênio",
+            faseProcesso: "Formalização",
+            tipoRisco: "AMEAÇA",
+            descricao: "Possibilidade de atraso na assinatura e publicação do convênio",
+            probabilidade: "Média",
+            impacto: "Alto",
+            nivelRisco: "Alto",
+          },
+        ],
+        observacoes: "Necessário detalhar melhor os riscos operacionais",
+      },
+      {
+        id: 2,
+        titulo: "Avaliação de Riscos e Controles",
+        descricao: "Avaliação dos controles existentes",
+        controles: [
+          "Checklist documental obrigatório",
+          "Acompanhamento jurídico prévio",
+        ],
+        observacoes: "SECGOV solicitou maior detalhamento",
+      },
+      {
+        id: 3,
+        titulo: "Resposta aos Riscos",
+        descricao: "Definição das respostas aos riscos",
+        respostas: [
+          "Mitigar: antecipar análise documental",
+          "Mitigar: criar fluxo padronizado de aprovação",
+        ],
+        observacoes: "",
+      },
+      {
+        id: 4,
+        titulo: "Atividades de Controle",
+        descricao: "Atividades preventivas e corretivas",
+        atividades: [
+          "Revisão quinzenal dos convênios em andamento",
+          "Validação jurídica antecipada",
+        ],
+        observacoes: "",
+      },
+      {
+        id: 5,
+        titulo: "Ocorrências de Risco",
+        descricao: "Registro de ocorrências",
+        ocorrencias: [
+          "10/04/2025 - Pendência documental identificada",
+        ],
+        observacoes: "Ajustes ainda em andamento",
+      },
+    ],
+    historico: [
+      {
+        id: "h6-1",
+        tipo: "criado",
+        data: "01/04/2025",
+        hora: "09:00",
+        usuario: "Mariana Pereira Da Silva",
+        observacao: "Processo cadastrado no sistema",
+      },
+      {
+        id: "h6-2",
+        tipo: "chegou_revisao",
+        data: "10/04/2025",
+        hora: "10:30",
+        usuario: "Mariana Pereira Da Silva",
+        observacao: "Enviado para revisão inicial",
+      },
+      {
+        id: "h6-3",
+        tipo: "em_analise",
+        data: "12/04/2025",
+        hora: "14:00",
+        usuario: "Equipe SECGOV",
+      },
+      {
+        id: "h6-4",
+        tipo: "ajuste_solicitado",
+        data: "18/04/2025",
+        hora: "16:20",
+        usuario: "Equipe SECGOV",
+        observacao: "Detalhar controles preventivos e indicadores",
+      },
+      {
+        id: "h6-5",
+        tipo: "em_ajuste",
+        data: "19/04/2025",
+        hora: "08:40",
+        usuario: "Mariana Pereira Da Silva",
+        observacao: "Responsável realizando as correções solicitadas",
+      },
+    ],
+  }
+
 ];

@@ -31,21 +31,14 @@ function Dashboard() {
 
   const sorted = useMemo(() => {
     return [...mockProcesses].sort((a, b) => {
-      // PRIORIDADE ESPECIAL:
-      // Se for Gabinete do Reitor, processos em ajuste aparecem primeiro
-      if (profile.role === "unidade" && profile.unidadeNome === "Gabinete do Reitor") {
-        if (a.status === "em_ajuste" && b.status !== "em_ajuste") return -1;
-        if (a.status !== "em_ajuste" && b.status === "em_ajuste") return 1;
-      }
+      const parseDate = (date: string) => {
+        const [day, month, year] = date.split("/");
+        return new Date(Number(year), Number(month) - 1, Number(day)).getTime();
+      };
   
-      // Depois processos em revisão
-      if (a.status === "em_revisao" && b.status !== "em_revisao") return -1;
-      if (a.status !== "em_revisao" && b.status === "em_revisao") return 1;
-  
-      // Depois ordena pelos dias desde última revisão
-      return b.diasDesdeUltimaRevisao - a.diasDesdeUltimaRevisao;
+      return parseDate(b.dataEnvioRevisao) - parseDate(a.dataEnvioRevisao);
     });
-  }, [profile]);
+  }, []);
 
   const filtered = useMemo(() => {
     return sorted.filter((p) => {
@@ -166,13 +159,7 @@ function Dashboard() {
                   {filtered.map((process) => (
                     <tr
                       key={process.id}
-                      className={`border-b border-border/50 transition-colors hover:bg-muted/30 ${
-                        profile.role === "unidade" &&
-                        profile.unidadeNome === "Gabinete do Reitor" &&
-                        process.status === "em_ajuste"
-                          ? "bg-amber-50 border-l-4 border-l-amber-500"
-                          : ""
-                      }`}
+                      className="border-b border-border/50 transition-colors hover:bg-muted/30"
                     >    
                     <td className="px-5 py-4 text-sm font-medium text-foreground">{process.nome}</td>
                       <td className="px-5 py-4 text-sm text-muted-foreground">
@@ -192,8 +179,12 @@ function Dashboard() {
                       <td className="px-5 py-4">
                         <div className="flex items-center justify-end gap-2">
 
-                          {/* Histórico aparece para ambos */}
-                          <Link
+                          
+
+                          {/* SECGOV */}
+                          {profile.role === "secgov" && (
+                            <>
+                            <Link
                             to="/historico/$processId"
                             params={{ processId: process.id }}
                           >
@@ -201,9 +192,7 @@ function Dashboard() {
                               <History className="w-4 h-4" />
                             </Button>
                           </Link>
-
-                          {/* SECGOV */}
-                          {profile.role === "secgov" && (
+                          
                             <Link
                               to="/revisao/$processId"
                               params={{ processId: process.id }}
@@ -213,6 +202,7 @@ function Dashboard() {
                                 Revisar
                               </Button>
                             </Link>
+                            </>
                           )}
 
                           {/* Unidade */}
@@ -228,7 +218,7 @@ function Dashboard() {
                                   className="gap-1.5"
                                 >
                                   <Pencil className="w-4 h-4" />
-                                  Editar
+                                  
                                 </Button>
                               </Link>
 
@@ -239,7 +229,6 @@ function Dashboard() {
                                 className="gap-1.5 border-red-200 text-red-600 hover:bg-red-50"
                               >
                                 <Trash2 className="w-4 h-4" />
-                                Excluir
                               </Button>
                             </>
                           )}

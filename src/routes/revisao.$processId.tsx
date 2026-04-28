@@ -151,16 +151,34 @@ const [revisaoIniciada, setRevisaoIniciada] = useState(
   )}
 
   {/* BOTÃO APENAS PARA GABINETE */}
-  {profile.role === "unidade" && statusAtual === "em_ajuste" && (
-    <Button
-      onClick={() => setShowReenviarModal(true)}
-      className="gap-2"
-      variant="outline"
+  {/* BOTÕES APENAS PARA GABINETE */}
+{profile.role === "unidade" && (
+  <div className="flex flex-col gap-2">
+    <Link
+      to="/historico/$processId"
+      params={{ processId: process.id }}
     >
-      <ClipboardList className="w-4 h-4" />
-      Reenviar para revisão
-    </Button>
-  )}
+      <Button
+        variant="outline"
+        className="gap-2 w-full"
+      >
+        <History className="w-4 h-4" />
+        Ver Histórico
+      </Button>
+    </Link>
+
+    {statusAtual === "em_ajuste" && (
+      <Button
+        onClick={() => setShowReenviarModal(true)}
+        className="gap-2"
+        variant="outline"
+      >
+        <ClipboardList className="w-4 h-4" />
+        Reenviar para revisão
+      </Button>
+    )}
+  </div>
+)}
 </div>
   </div>
 </div>
@@ -398,11 +416,11 @@ const [revisaoIniciada, setRevisaoIniciada] = useState(
             </div>
           )}
           {showReenviarModal && (
-  <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-    <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl">
-      <h2 className="text-lg font-bold mb-2">
-        Reenviar para revisão
-      </h2>
+          <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+            <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl">
+              <h2 className="text-lg font-bold mb-2">
+                Reenviar para revisão
+              </h2>
 
       <p className="text-sm text-muted-foreground mb-6">
         Deseja reenviar este processo para nova análise da SECGOV?

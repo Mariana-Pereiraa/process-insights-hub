@@ -95,7 +95,18 @@ function NotificationsPage() {
 
   const handleOpenProcess = (n: Notification) => {
     markOneRead(n.id);
-    navigate({ to: "/historico/$processId", params: { processId: n.processId } });
+  
+    // notificações que devem abrir o histórico
+    const goToHistorico = ["concluido", "revisado"].includes(n.tipo);
+  
+    navigate({
+      to: goToHistorico
+        ? "/historico/$processId"
+        : "/revisao/$processId",
+      params: {
+        processId: n.processId,
+      },
+    });
   };
 
   return (
@@ -224,15 +235,24 @@ function NotificationsPage() {
                           </p>
 
                           <div className="flex items-center gap-2">
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="gap-1.5 h-8"
-                              onClick={() => handleOpenProcess(n)}
-                            >
-                              <Eye className="w-3.5 h-3.5" />
-                              Ver processo
-                            </Button>
+                          <Button
+  variant="outline"
+  size="sm"
+  className="gap-1.5 h-8"
+  onClick={() => handleOpenProcess(n)}
+>
+  <Eye className="w-3.5 h-3.5" />
+
+  {["concluido", "revisado"].includes(n.tipo)
+    ? "Ver histórico"
+    : n.tipo === "ajuste_solicitado"
+    ? "Ir para ajustes"
+    : n.tipo === "nova_revisao_anual"
+    ? "Abrir revisão anual"
+    : n.tipo === "prazo_proximo"
+    ? "Ver prazo"
+    : "Abrir processo"}
+</Button>
                             {!n.lida && (
                               <Button
                                 variant="ghost"

@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { CircleChevronDown, RotateCcw, CheckCircle2, Search, ClipboardList, History, Pencil, Trash2 } from "lucide-react";
 import { AppSidebar } from "@/components/AppSidebar";
 import { Topbar } from "@/components/Topbar";
@@ -23,11 +23,67 @@ function Dashboard() {
   const { profile } = useProfile();
   const [filterUnidade, setFilterUnidade] = useState("");
   const [filterStatus, setFilterStatus] = useState<"todos" | ProcessStatus>("todos");
+  useEffect(() => {
+    if (profile.role === "secgov") {
+      setFilterStatus("em_revisao");
+    } else {
+      setFilterStatus("todos");
+    }
+  }, [profile.role]);
   const [search, setSearch] = useState("");
   const [processToDelete, setProcessToDelete] = useState<string | null>(null);
+  const [dataInicial, setDataInicial] = useState("");
+  const [dataFinal, setDataFinal] = useState("");
+  const [openDeadlineModal, setOpenDeadlineModal] = useState(false);
+  const [prazoGeralRevisao, setPrazoGeralRevisao] = useState<
+  { ano: string; prazo: string }[]
+  >([
+    {
+      ano: "2026",
+      prazo: "2026-05-10",
+    },
+  ]);
+  const [novoPrazo, setNovoPrazo] = useState("");
+const [novoAno, setNovoAno] = useState("");
+  const [showPrazoNotification, setShowPrazoNotification] = useState(false);
+  useEffect(() => {
+    if (profile.role !== "secgov") {
+      setShowPrazoNotification(true);
+    }
+  }, [profile.role]);
+
+  const prazoMaisRecente = useMemo(() => {
+    if (!prazoGeralRevisao.length) return null;
+  
+    return [...prazoGeralRevisao].sort(
+      (a, b) => Number(b.ano) - Number(a.ano)
+    )[0];
+  }, [prazoGeralRevisao]);
+  
   
 
   const unidades = useMemo(() => [...new Set(mockProcesses.map((p) => p.unidade))], []);
+
+  const getPrazoStatus = (prazo?: string) => {
+    if (!prazo) return null;
+  
+    const [day, month, year] = prazo.split("/");
+    const prazoDate = new Date(Number(year), Number(month) - 1, Number(day));
+    const hoje = new Date();
+  
+    const diffTime = prazoDate.getTime() - hoje.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  
+    if (diffDays < 0) {
+      return "vencido";
+    }
+  
+    if (diffDays <= 3) {
+      return "proximo";
+    }
+  
+    return "normal";
+  };
 
   const sorted = useMemo(() => {
     return [...mockProcesses].sort((a, b) => {
@@ -72,75 +128,209 @@ function Dashboard() {
     <div className="flex min-h-screen w-full bg-background">
       <AppSidebar />
       <div className="flex-1 flex flex-col min-w-0">
-        <Topbar title="Acompanhamento" />
-        <main className="flex-1 p-6 overflow-auto">
+      <Topbar
+  title={
+    profile.role === "secgov"
+      ? "Acompanhamento"
+      : "Processos"
+  }
+/>
+       <main className="flex-1 p-6 overflow-auto">
+        {showPrazoNotification &&
+  profile.role !== "secgov" &&
+  prazoMaisRecente && (
+    <div className="mb-6 rounded-2xl border border-blue-200 bg-blue-50 p-5 shadow-sm transition-all">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+          <h2 className="text-lg font-bold text-blue-900">
+            Prazo Geral da Revisão
+          </h2>
+
+          <p
+            className={`text-sm font-medium mt-1 ${
+              getPrazoStatus(
+                prazoMaisRecente.prazo.split("-").reverse().join("/")
+              ) === "vencido"
+                ? "text-red-600"
+                : getPrazoStatus(
+                    prazoMaisRecente.prazo.split("-").reverse().join("/")
+                  ) === "proximo"
+                ? "text-amber-600"
+                : "text-emerald-600"
+            }`}
+          >
+            O prazo definido para {prazoMaisRecente.ano} é: {" "}
+            {prazoMaisRecente.prazo.split("-").reverse().join("/")}
+          </p>
+        </div>
+
+        <Button
+          onClick={() => setShowPrazoNotification(false)}
+          className="bg-blue-600 hover:bg-blue-700 text-white"
+        >
+          Entendi
+        </Button>
+      </div>
+    </div>
+)}
           {/* Summary cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-8">
-            <div className="border rounded-2xl p-6 flex items-center gap-5 border-slate-400 !bg-white">
-              <div className="w-14 h-14 rounded-xl flex items-center justify-center bg-slate-300">
-                <CircleChevronDown className="w-7 h-7 bg-transparent text-slate-700" />
-              </div>
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Processos aguardando revisão</p>
-                <p className="text-3xl font-bold !text-black">{totalRevisao}</p>
-              </div>
-            </div>
-            <div className="border rounded-2xl p-6 flex items-center gap-5 border-amber-400 !bg-white">
-              <div className="w-14 h-14 rounded-xl flex items-center justify-center bg-amber-100">
-                <RotateCcw className="w-7 h-7 text-amber-600" />
-              </div>
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Devolvidos para ajuste</p>
-                <p className="text-3xl font-bold !text-black">{totalDevolvido}</p>
-              </div>
-            </div>
-            <div className="border rounded-2xl p-6 flex items-center gap-5 border-emerald-400 !bg-white">
-              <div className="w-14 h-14 rounded-xl flex items-center justify-center bg-emerald-100">
-                <CheckCircle2 className="w-7 h-7 text-emerald-600" />
-              </div>
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Aguardando revisão anual</p>
-                <p className="text-3xl font-bold !text-black">{totalConcluido}</p>
-              </div>
-            </div>
-          </div>
+          {/* Substitua toda a seção de Summary cards por esta lógica */}
+
+{/* SUBSTITUA TODA A ÁREA DOS CARDS DO SECGOV POR ESTA */}
+
+{profile.role === "secgov" ? (
+  <>
+    {/* Header da seção */}
+    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-5">
+      <div>
+        <h2 className="text-xl font-bold text-foreground">
+          Painel de Revisão
+        </h2>
+        <p className="text-sm text-muted-foreground">
+          Acompanhe os processos e defina o prazo geral de revisão
+        </p>
+      </div>
+
+      <Button
+        onClick={() => setOpenDeadlineModal(true)}
+        className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl px-5 py-2.5 shadow-sm"
+      >
+        Definir Prazo Geral
+      </Button>
+    </div>
+
+    {/* Cards menores */}
+    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+      
+      <div className="border rounded-2xl p-4 flex items-center gap-4 border-slate-400 bg-white">
+        <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-slate-300">
+          <CircleChevronDown className="w-6 h-6 text-slate-700" />
+        </div>
+        <div>
+          <p className="text-xs font-medium text-muted-foreground">
+            Processos aguardando revisão
+          </p>
+          <p className="text-2xl font-bold text-black">
+            {totalRevisao}
+          </p>
+        </div>
+      </div>
+
+      <div className="border rounded-2xl p-4 flex items-center gap-4 border-amber-400 bg-white">
+        <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-amber-100">
+          <RotateCcw className="w-6 h-6 text-amber-600" />
+        </div>
+        <div>
+          <p className="text-xs font-medium text-muted-foreground">
+            Devolvidos para ajuste
+          </p>
+          <p className="text-2xl font-bold text-black">
+            {totalDevolvido}
+          </p>
+        </div>
+      </div>
+
+      <div className="border rounded-2xl p-4 flex items-center gap-4 border-emerald-400 bg-white">
+        <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-emerald-100">
+          <CheckCircle2 className="w-6 h-6 text-emerald-600" />
+        </div>
+        <div>
+          <p className="text-xs font-medium text-muted-foreground">
+            Aguardando revisão anual
+          </p>
+          <p className="text-2xl font-bold text-black">
+            {totalConcluido}
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </>
+) : (
+  /* Área para Gabinete/Reitor */
+  
+  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+    <div>
+      <h2 className="text-2xl font-bold text-foreground">
+        Gerenciamento de Processos
+      </h2>
+      <p className="text-sm text-muted-foreground">
+        Visualize e gerencie processos de todas as unidades
+      </p>
+    </div>
+
+    <Button className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl px-5">
+      + Novo Processo
+    </Button>
+  </div>
+)}
 
           {/* Filters */}
-          <div className="bg-card rounded-2xl border border-border shadow-sm">
-            <div className="p-5 border-b border-border flex flex-col sm:flex-row gap-3">
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <input
-                  type="text"
-                  placeholder="Buscar por nome do processo..."
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-                />
-              </div>
-              <select
-                value={filterUnidade}
-                onChange={(e) => setFilterUnidade(e.target.value)}
-                className="px-4 py-2.5 rounded-xl border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-              >
-                <option value="">Todas as Unidades</option>
-                {unidades.map((u) => (
-                  <option key={u} value={u}>{u}</option>
-                ))}
-              </select>
-              <select
-                value={filterStatus}
-                onChange={(e) => setFilterStatus(e.target.value as "todos" | ProcessStatus)}
-                className="px-4 py-2.5 rounded-xl border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-              >
-                <option value="todos">Todos os Status</option>
-                {processStatusOptions.map((status) => (
-                  <option key={status.value} value={status.value}>
-                    {status.label}
-                  </option>
-                ))}
-              </select>
-            </div>
+          {/* Filters */}
+<div className="bg-card rounded-2xl border border-border shadow-sm">
+  <div className="p-5 border-b border-border">
+    <div className="flex flex-wrap items-center gap-3">
+      
+      {/* Busca menor */}
+      <div className="relative w-full max-w-sm">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+        <input
+          type="text"
+          placeholder="Buscar por nome do processo..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+        />
+      </div>
+
+      {/* Data inicial */}
+      <input
+        type="date"
+        value={dataInicial}
+        onChange={(e) => setDataInicial(e.target.value)}
+        className="px-4 py-2.5 rounded-xl border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+      />
+
+      {/* Data final */}
+      <input
+        type="date"
+        value={dataFinal}
+        onChange={(e) => setDataFinal(e.target.value)}
+        className="px-4 py-2.5 rounded-xl border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+      />
+
+      {/* Unidade */}
+      <select
+  value={filterUnidade}
+  onChange={(e) => setFilterUnidade(e.target.value)}
+  className="w-[240px] px-4 py-2.5 rounded-xl border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+>
+        <option value="">Todas as Unidades</option>
+        {unidades.map((u) => (
+          <option key={u} value={u}>
+            {u}
+          </option>
+        ))}
+      </select>
+
+      {/* Status */}
+      <select
+        value={filterStatus}
+        onChange={(e) =>
+          setFilterStatus(e.target.value as "todos" | ProcessStatus)
+        }
+        className="px-4 py-2.5 rounded-xl border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+      >
+        <option value="todos">Todos os Status</option>
+        {processStatusOptions.map((status) => (
+          <option key={status.value} value={status.value}>
+            {status.label}
+          </option>
+        ))}
+      </select>
+
+    </div>
+  </div>
 
             {/* Table */}
             <div className="overflow-x-auto">
@@ -176,6 +366,7 @@ function Dashboard() {
                       <td className="px-5 py-4 text-sm text-muted-foreground">
                         {process.dataEnvioRevisao}
                       </td>
+                      
                       <td className="px-5 py-4">
                         <div className="flex items-center justify-end gap-2">
 
@@ -185,6 +376,14 @@ function Dashboard() {
                           {profile.role === "secgov" && (
                             <>
                             <Link
+                                to="/revisao/$processId"
+                                params={{ processId: process.id }}
+                              >
+                                <Button variant="outline" size="sm" className="gap-1.5">
+                                  <ClipboardList className="w-4 h-4" />
+Revisar                                </Button>
+                            </Link>
+                            <Link
                             to="/historico/$processId"
                             params={{ processId: process.id }}
                           >
@@ -192,22 +391,22 @@ function Dashboard() {
                               <History className="w-4 h-4" />
                             </Button>
                           </Link>
-                          
-                            <Link
-                              to="/revisao/$processId"
-                              params={{ processId: process.id }}
-                            >
-                              <Button variant="outline" size="sm" className="gap-1.5">
-                                <ClipboardList className="w-4 h-4" />
-                                Revisar
-                              </Button>
-                            </Link>
+                        
                             </>
                           )}
 
                           {/* Unidade */}
                           {profile.role === "unidade" && (
                             <>
+                            <Link
+                                to="/revisao/$processId"
+                                params={{ processId: process.id }}
+                              >
+                                <Button variant="outline" size="sm" className="gap-1.5">
+                                  <ClipboardList className="w-4 h-4" />
+                                  Gerenciar Risco
+                                </Button>
+                            </Link>
                               <Link
                                 to="/revisao/$processId"
                                 params={{ processId: process.id }}
@@ -247,6 +446,81 @@ function Dashboard() {
               </table>
             </div>
           </div>
+
+{openDeadlineModal && (
+  <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+    <div className="bg-white rounded-2xl p-6 w-full max-w-lg shadow-xl">
+      <h2 className="text-lg font-bold mb-4">
+        Definir prazo de revisão
+      </h2>
+
+      <div className="space-y-4 mb-6">
+        <input
+          type="number"
+          placeholder="Ano (ex: 2026)"
+          value={novoAno}
+          onChange={(e) => setNovoAno(e.target.value)}
+          className="w-full px-4 py-2 rounded-xl border border-input"
+        />
+
+        <input
+          type="date"
+          value={novoPrazo}
+          onChange={(e) => setNovoPrazo(e.target.value)}
+          className="w-full px-4 py-2 rounded-xl border border-input"
+        />
+      </div>
+
+      {/* Lista de prazos já cadastrados */}
+      <div className="mb-6 space-y-2 max-h-52 overflow-y-auto">
+        {prazoGeralRevisao.map((item) => (
+          <div
+            key={item.ano}
+            className="flex items-center justify-between rounded-xl border px-4 py-3"
+          >
+            <span className="text-sm font-medium">
+              {item.ano} — {item.prazo.split("-").reverse().join("/")}
+            </span>
+          </div>
+        ))}
+      </div>
+
+      <div className="flex justify-end gap-3">
+        <Button
+          variant="outline"
+          onClick={() => {
+            setOpenDeadlineModal(false);
+            setNovoPrazo("");
+            setNovoAno("");
+          }}
+        >
+          Cancelar
+        </Button>
+
+        <Button
+          onClick={() => {
+            if (!novoAno || !novoPrazo) return;
+
+            setPrazoGeralRevisao((prev) => [
+              ...prev.filter((p) => p.ano !== novoAno),
+              {
+                ano: novoAno,
+                prazo: novoPrazo,
+              },
+            ]);
+
+            setOpenDeadlineModal(false);
+            setNovoPrazo("");
+            setNovoAno("");
+          }}
+          className="bg-blue-600 hover:bg-blue-700 text-white"
+        >
+          Salvar Prazo
+        </Button>
+      </div>
+    </div>
+  </div>
+)}
           
           {processToDelete && (
             <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">

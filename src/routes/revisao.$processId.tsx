@@ -46,6 +46,8 @@ const [statusAtual, setStatusAtual] = useState(process.status);
 const [revisaoIniciada, setRevisaoIniciada] = useState(
   process.status === "em_analise"
 );
+const [showCancelarEnvioModal, setShowCancelarEnvioModal] = useState(false);
+const [showCancelarRevisaoModal, setShowCancelarRevisaoModal] = useState(false);
 
   const toggleStep = (id: number) => {
     setOpenSteps((prev) => {
@@ -63,11 +65,137 @@ const [revisaoIniciada, setRevisaoIniciada] = useState(
         <Topbar title="Revisão de Processo" />
         <main className="flex-1 p-6 overflow-auto">
           {/* Back link */}
-          <Link to="/" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-6">
-            <ArrowLeft className="w-4 h-4" />
-            Voltar para Acompanhamento
-          </Link>
+          
+          {/* Barra de ações superior */}
+<div className="flex flex-wrap items-center justify-between mb-6">
 
+{/* Voltar */}
+<Link
+  to="/"
+  className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+>
+  <ArrowLeft className="w-4 h-4" />
+  Voltar para Acompanhamento
+</Link>
+
+{/* Botões da direita */}
+<div className="flex flex-wrap items-center gap-2">
+
+  {/* BOTÕES APENAS PARA SECGOV */}
+  {profile.role === "secgov" && (
+    <>
+      {!revisaoIniciada ? (
+        <Button
+          onClick={() => {
+            setStatusAtual("em_analise");
+            setRevisaoIniciada(true);
+          }}
+          className="gap-2"
+          variant="outline"
+        >
+          <ClipboardList className="w-4 h-4" />
+          Iniciar Revisão
+        </Button>
+      ) : (
+        <div className="flex items-center gap-2">
+          {/* Cancelar Revisão */}
+          <Button
+            variant="outline"
+            onClick={() => setShowCancelarRevisaoModal(true)}
+            className="gap-2"
+          >
+            <AlertTriangle className="w-4 h-4" />
+            Cancelar Revisão
+          </Button>
+      
+          {/* Finalizar Revisão */}
+          <div className="relative">
+            <Button
+              variant="outline"
+              onClick={() => setShowActionsMenu(!showActionsMenu)}
+              className="gap-2"
+            >
+              <ClipboardList className="w-4 h-4" />
+              Finalizar Revisão
+            </Button>
+      
+            {showActionsMenu && (
+              <div className="absolute right-0 mt-2 w-56 rounded-xl border border-border bg-card shadow-lg z-50 p-2">
+                <button
+                  onClick={() => {
+                    setSubmitted("aceito");
+                    setStatusAtual("concluido");
+                    setShowActionsMenu(false);
+                  }}
+                  className="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-muted text-left text-sm"
+                >
+                  <CheckCircle2 className="w-4 h-4 text-status-done" />
+                  Processo concluído
+                </button>
+      
+                <button
+                  onClick={() => {
+                    setSubmitted("ajustes");
+                    setStatusAtual("em_ajuste");
+                    setShowActionsMenu(false);
+                  }}
+                  className="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-muted text-left text-sm"
+                >
+                  <AlertTriangle className="w-4 h-4 text-status-review" />
+                  Solicitar ajuste
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </>
+  )}
+  
+  {/* Ver Histórico - apenas unidade */}
+  {profile.role === "unidade" && (
+    <Link
+      to="/historico/$processId"
+      params={{ processId: process.id }}
+    >
+      <Button variant="outline" className="gap-2">
+        <History className="w-4 h-4" />
+        Ver Histórico
+      </Button>
+    </Link>
+  )}
+
+  {/* Enviar/Reenviar para revisão */}
+  {profile.role === "unidade" && (
+  <>
+    {(statusAtual === "Rascunho" || statusAtual === "em_ajuste") && (
+      <Button
+        onClick={() => setShowReenviarModal(true)}
+        variant="outline"
+        className="gap-2"
+      >
+        <ClipboardList className="w-4 h-4" />
+        {statusAtual === "Rascunho"
+          ? "Enviar para revisão"
+          : "Reenviar para revisão"}
+      </Button>
+    )}
+
+{statusAtual === "em_revisao" && (
+  <Button
+    onClick={() => setShowCancelarEnvioModal(true)}
+    variant="outline"
+    className="gap-2"
+  >
+    <AlertTriangle className="w-4 h-4" />
+    Cancelar envio
+  </Button>
+)}
+  </>
+)}
+  
+</div>
+</div>
           {/* Process header */}
           <div className="bg-card rounded-2xl border border-border shadow-sm p-6 mb-6">
             <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
@@ -92,93 +220,11 @@ const [revisaoIniciada, setRevisaoIniciada] = useState(
               <div className="flex flex-col items-end gap-3">
   <StatusBadge status={statusAtual} />
 
-  {/* BOTÕES APENAS PARA SECGOV */}
-  {profile.role === "secgov" && (
-    <>
-      {!revisaoIniciada ? (
-        <Button
-          onClick={() => {
-            setStatusAtual("em_analise");
-            setRevisaoIniciada(true);
-          }}
-          className="gap-2"
-          variant="outline"
-        >
-          <ClipboardList className="w-4 h-4" />
-          Iniciar Revisão
-        </Button>
-      ) : (
-        <div className="relative">
-          <Button
-            variant="outline"
-            onClick={() => setShowActionsMenu(!showActionsMenu)}
-            className="gap-2"
-          >
-            <ClipboardList className="w-4 h-4" />
-            Finalizar Revisão
-          </Button>
-
-          {showActionsMenu && (
-            <div className="absolute right-0 mt-2 w-56 rounded-xl border border-border bg-card shadow-lg z-50 p-2">
-              <button
-                onClick={() => {
-                  setSubmitted("aceito");
-                  setStatusAtual("concluido");
-                  setShowActionsMenu(false);
-                }}
-                className="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-muted text-left text-sm"
-              >
-                <CheckCircle2 className="w-4 h-4 text-status-done" />
-                Processo concluído
-              </button>
-
-              <button
-                onClick={() => {
-                  setSubmitted("ajustes");
-                  setStatusAtual("em_ajuste");
-                  setShowActionsMenu(false);
-                }}
-                className="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-muted text-left text-sm"
-              >
-                <AlertTriangle className="w-4 h-4 text-status-review" />
-                Solicitar ajuste
-              </button>
-            </div>
-          )}
-        </div>
-      )}
-    </>
-  )}
+  
 
   {/* BOTÃO APENAS PARA GABINETE */}
   {/* BOTÕES APENAS PARA GABINETE */}
-{profile.role === "unidade" && (
-  <div className="flex flex-col gap-2">
-    <Link
-      to="/historico/$processId"
-      params={{ processId: process.id }}
-    >
-      <Button
-        variant="outline"
-        className="gap-2 w-full"
-      >
-        <History className="w-4 h-4" />
-        Ver Histórico
-      </Button>
-    </Link>
 
-    {statusAtual === "em_ajuste" && (
-      <Button
-        onClick={() => setShowReenviarModal(true)}
-        className="gap-2"
-        variant="outline"
-      >
-        <ClipboardList className="w-4 h-4" />
-        Reenviar para revisão
-      </Button>
-    )}
-  </div>
-)}
 </div>
   </div>
 </div>
@@ -418,14 +464,17 @@ const [revisaoIniciada, setRevisaoIniciada] = useState(
           {showReenviarModal && (
           <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
             <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl">
-              <h2 className="text-lg font-bold mb-2">
-                Reenviar para revisão
-              </h2>
+            <h2 className="text-lg font-bold mb-2">
+  {statusAtual === "Rascunho"
+    ? "Enviar para revisão"
+    : "Reenviar para revisão"}
+</h2>
 
-      <p className="text-sm text-muted-foreground mb-6">
-        Deseja reenviar este processo para nova análise da SECGOV?
-        O status será alterado automaticamente para revisão.
-      </p>
+<p className="text-sm text-muted-foreground mb-6">
+  {statusAtual === "Rascunho"
+    ? "Deseja enviar este processo para análise da SECGOV? O status será alterado para Em Revisão."
+    : "Deseja reenviar este processo para nova análise da SECGOV? O status será alterado automaticamente para revisão."}
+</p>
 
       <div className="flex justify-end gap-3">
         <Button
@@ -442,12 +491,81 @@ const [revisaoIniciada, setRevisaoIniciada] = useState(
           }}
           className="bg-primary text-white"
         >
-          Confirmar Reenvio
+          Confirmar Envio
         </Button>
       </div>
     </div>
   </div>
 )}
+
+{showCancelarEnvioModal && (
+  <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+    <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl">
+      <h2 className="text-lg font-bold mb-2">
+        Cancelar envio para revisão
+      </h2>
+
+      <p className="text-sm text-muted-foreground mb-6">
+        Deseja realmente cancelar o envio deste processo? 
+        O status será alterado para Rascunho.
+      </p>
+
+      <div className="flex justify-end gap-3">
+        <Button
+          variant="outline"
+          onClick={() => setShowCancelarEnvioModal(false)}
+        >
+          Voltar
+        </Button>
+
+        <Button
+          onClick={() => {
+            setStatusAtual("Rascunho");
+            setShowCancelarEnvioModal(false);
+          }}
+          className="bg-primary text-white"
+        >
+          Confirmar Cancelamento
+        </Button>
+      </div>
+    </div>
+  </div>
+)}
+{showCancelarRevisaoModal && (
+  <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+    <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl">
+      <h2 className="text-lg font-bold mb-2">
+        Cancelar revisão
+      </h2>
+
+      <p className="text-sm text-muted-foreground mb-6">
+        Deseja realmente cancelar esta revisão? 
+        O processo retornará para o status de Em Revisão.
+      </p>
+
+      <div className="flex justify-end gap-3">
+        <Button
+          variant="outline"
+          onClick={() => setShowCancelarRevisaoModal(false)}
+        >
+          Voltar
+        </Button>
+
+        <Button
+          onClick={() => {
+            setStatusAtual("em_revisao");
+            setRevisaoIniciada(false);
+            setShowCancelarRevisaoModal(false);
+          }}
+          className="bg-primary text-white"
+        >
+          Confirmar Cancelamento
+        </Button>
+      </div>
+    </div>
+  </div>
+)}
+
         </main>
       </div>
     </div>

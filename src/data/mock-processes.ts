@@ -11,7 +11,10 @@ export type HistoricoTipo =
   | "pendente_revisao_anual"
   | "ajuste_anual_solicitado";
 
-export type ProcessStatus = "em_revisao" | HistoricoTipo;
+  export type ProcessStatus =
+  | "Rascunho"
+  | "em_revisao"
+  | HistoricoTipo;
 
 export interface HistoricoEvento {
   id: string;
@@ -69,9 +72,10 @@ export const mockProcesses: Process[] = [
     setor: "Gabinete do Reitor",
     responsavel: "Mariana Pereira Da Silva",
     responsavelUsername: "mariana.silva",
-    status: "em_analise",
+    status: "Rascunho",
     diasDesdeUltimaRevisao: 370,
     dataEnvioRevisao: "10/04/2025",
+
     etapas: [
       {
         id: 1,

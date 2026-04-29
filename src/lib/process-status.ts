@@ -46,4 +46,8 @@ export const processStatusOptions = Object.entries(processStatusConfig).map(
     value: value as ProcessStatus,
     label: config.label,
   }),
+  {
+    value: "rascunho",
+    label: "Rascunho",
+  }
 );

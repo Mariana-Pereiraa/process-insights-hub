@@ -7,7 +7,12 @@ export function StatusBadge({ status }: { status: ProcessStatus }) {
     label: status,
     className: "bg-muted text-muted-foreground",
     dotClass: "bg-muted-foreground",
+    Rascunho: {
+      label: "Rascunho",
+      className: "bg-slate-100 text-slate-700 border-slate-200",
+    },
   };
+  
 
   return (
     <span className={cn("inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold", config.className)}>

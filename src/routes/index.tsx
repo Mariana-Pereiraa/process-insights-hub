@@ -34,7 +34,6 @@ function Dashboard() {
   const [processToDelete, setProcessToDelete] = useState<string | null>(null);
   const [dataInicial, setDataInicial] = useState("");
   const [dataFinal, setDataFinal] = useState("");
-  const [openDeadlineModal, setOpenDeadlineModal] = useState(false);
   const [prazoGeralRevisao, setPrazoGeralRevisao] = useState<
   { ano: string; prazo: string }[]
   >([
@@ -191,12 +190,11 @@ const [novoAno, setNovoAno] = useState("");
         </p>
       </div>
 
-      <Button
-        onClick={() => setOpenDeadlineModal(true)}
-        className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl px-5 py-2.5 shadow-sm"
-      >
-        Definir Prazo Geral
-      </Button>
+      <Link to="/prazo-revisao">
+  <Button className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl px-5 py-2.5 shadow-sm">
+    Definir Prazo Geral
+  </Button>
+</Link>
     </div>
 
     {/* Cards menores */}
@@ -446,81 +444,6 @@ Revisar                                </Button>
               </table>
             </div>
           </div>
-
-{openDeadlineModal && (
-  <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-    <div className="bg-white rounded-2xl p-6 w-full max-w-lg shadow-xl">
-      <h2 className="text-lg font-bold mb-4">
-        Definir prazo de revisão
-      </h2>
-
-      <div className="space-y-4 mb-6">
-        <input
-          type="number"
-          placeholder="Ano (ex: 2026)"
-          value={novoAno}
-          onChange={(e) => setNovoAno(e.target.value)}
-          className="w-full px-4 py-2 rounded-xl border border-input"
-        />
-
-        <input
-          type="date"
-          value={novoPrazo}
-          onChange={(e) => setNovoPrazo(e.target.value)}
-          className="w-full px-4 py-2 rounded-xl border border-input"
-        />
-      </div>
-
-      {/* Lista de prazos já cadastrados */}
-      <div className="mb-6 space-y-2 max-h-52 overflow-y-auto">
-        {prazoGeralRevisao.map((item) => (
-          <div
-            key={item.ano}
-            className="flex items-center justify-between rounded-xl border px-4 py-3"
-          >
-            <span className="text-sm font-medium">
-              {item.ano} — {item.prazo.split("-").reverse().join("/")}
-            </span>
-          </div>
-        ))}
-      </div>
-
-      <div className="flex justify-end gap-3">
-        <Button
-          variant="outline"
-          onClick={() => {
-            setOpenDeadlineModal(false);
-            setNovoPrazo("");
-            setNovoAno("");
-          }}
-        >
-          Cancelar
-        </Button>
-
-        <Button
-          onClick={() => {
-            if (!novoAno || !novoPrazo) return;
-
-            setPrazoGeralRevisao((prev) => [
-              ...prev.filter((p) => p.ano !== novoAno),
-              {
-                ano: novoAno,
-                prazo: novoPrazo,
-              },
-            ]);
-
-            setOpenDeadlineModal(false);
-            setNovoPrazo("");
-            setNovoAno("");
-          }}
-          className="bg-blue-600 hover:bg-blue-700 text-white"
-        >
-          Salvar Prazo
-        </Button>
-      </div>
-    </div>
-  </div>
-)}
           
           {processToDelete && (
             <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">

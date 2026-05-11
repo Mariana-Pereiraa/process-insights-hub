@@ -56,6 +56,9 @@ export interface Process {
   setor: string;
   responsavel: string;
   responsavelUsername: string;
+  /** Analista designado pelo SecGovResponsável para revisar este processo */
+  analistaNome?: string;
+  analistaUsername?: string;
   status: ProcessStatus;
   diasDesdeUltimaRevisao: number;
   dataEnvioRevisao: string;

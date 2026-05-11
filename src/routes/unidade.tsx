@@ -29,6 +29,7 @@ import { mockProcesses, type Process } from "@/data/mock-processes";
 import { mockNotifications, type NotificationType } from "@/data/mock-notifications";
 import { useProfile } from "@/contexts/ProfileContext";
 import { cn } from "@/lib/utils";
+import { calcularPrazoAjuste, DIAS_PRAZO_AJUSTE } from "@/lib/process-status";
 
 export const Route = createFileRoute("/unidade")({
   component: UnidadePage,
@@ -159,38 +160,70 @@ function UnidadePage() {
                   <AlertTriangle className="w-5 h-5 text-amber-700" />
                   <h2 className="text-base font-semibold text-amber-900">Precisa da sua atenção</h2>
                 </div>
+                <p className="text-xs text-amber-800/80 mb-3">
+                  Prazo para realizar o ajuste solicitado pela SECGOV: <strong>{DIAS_PRAZO_AJUSTE} dias corridos</strong>.
+                </p>
                 <div className="space-y-3">
-                  {pendentes.map((p) => (
-                    <div
-                      key={p.id}
-                      className="rounded-xl border border-amber-200 bg-white p-4 flex flex-wrap items-center justify-between gap-3"
-                    >
-                      <div className="min-w-0">
-                        <div className="flex items-center gap-2 mb-1">
-                          <p className="text-sm font-semibold text-foreground truncate">{p.nome}</p>
-                          <StatusBadge status={p.status} />
+                  {pendentes.map((p) => {
+                    const prazo = calcularPrazoAjuste(p.status, p.historico);
+                    return (
+                      <div
+                        key={p.id}
+                        className={cn(
+                          "rounded-xl border bg-white p-4 flex flex-wrap items-center justify-between gap-3",
+                          prazo?.vencido
+                            ? "border-red-300 ring-1 ring-red-200"
+                            : prazo?.proximo
+                              ? "border-orange-300 ring-1 ring-orange-200"
+                              : "border-amber-200"
+                        )}
+                      >
+                        <div className="min-w-0">
+                          <div className="flex items-center gap-2 mb-1">
+                            <p className="text-sm font-semibold text-foreground truncate">{p.nome}</p>
+                            <StatusBadge status={p.status} />
+                          </div>
+                          {prazo ? (
+                            <p
+                              className={cn(
+                                "text-xs font-medium",
+                                prazo.vencido
+                                  ? "text-red-700"
+                                  : prazo.proximo
+                                    ? "text-orange-700"
+                                    : "text-amber-800"
+                              )}
+                            >
+                              {prazo.vencido
+                                ? `Prazo vencido há ${Math.abs(prazo.diasRestantes)} dia(s) (limite: ${prazo.dataLimite})`
+                                : prazo.diasRestantes === 0
+                                  ? `Vence hoje (${prazo.dataLimite})`
+                                  : `Restam ${prazo.diasRestantes} dia(s) — limite: ${prazo.dataLimite}`}
+                            </p>
+                          ) : (
+                            <p className="text-xs text-muted-foreground">
+                              Última movimentação:{" "}
+                              {p.historico[p.historico.length - 1]?.observacao ?? "—"}
+                            </p>
+                          )}
                         </div>
-                        <p className="text-xs text-muted-foreground">
-                          Última movimentação:{" "}
-                          {p.historico[p.historico.length - 1]?.observacao ?? "—"}
-                        </p>
+                        <div className="flex items-center gap-2">
+                          <Link to="/historico/$processId" params={{ processId: p.id }}>
+                            <Button variant="outline" size="sm" className="gap-1.5">
+                              <History className="w-4 h-4" />
+                              Histórico
+                            </Button>
+                          </Link>
+                          <Link to="/historico/$processId" params={{ processId: p.id }}>
+                            <Button size="sm" className="gap-1.5 bg-amber-600 hover:bg-amber-700">
+                              <ClipboardList className="w-4 h-4" />
+                              Realizar ajuste
+                            </Button>
+                          </Link>
+                        </div>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <Link to="/historico/$processId" params={{ processId: p.id }}>
-                          <Button variant="outline" size="sm" className="gap-1.5">
-                            <History className="w-4 h-4" />
-                            Histórico
-                          </Button>
-                        </Link>
-                        <Link to="/historico/$processId" params={{ processId: p.id }}>
-                          <Button size="sm" className="gap-1.5 bg-amber-600 hover:bg-amber-700">
-                            <ClipboardList className="w-4 h-4" />
-                            Realizar ajuste
-                          </Button>
-                        </Link>
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </section>
             )}

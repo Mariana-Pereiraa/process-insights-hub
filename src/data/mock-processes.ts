@@ -56,6 +56,9 @@ export interface Process {
   setor: string;
   responsavel: string;
   responsavelUsername: string;
+  /** Analista designado pelo SecGovResponsável para revisar este processo */
+  analistaNome?: string;
+  analistaUsername?: string;
   status: ProcessStatus;
   diasDesdeUltimaRevisao: number;
   dataEnvioRevisao: string;
@@ -139,6 +142,8 @@ export const mockProcesses: Process[] = [
     setor: "Contratos",
     responsavel: "Carlos Eduardo Santos",
     responsavelUsername: "carlos.santos",
+    analistaNome: "Paula Ribeiro",
+    analistaUsername: "paula.ribeiro",
     status: "em_revisao",
     diasDesdeUltimaRevisao: 380,
     dataEnvioRevisao: "01/04/2025",
@@ -174,6 +179,8 @@ export const mockProcesses: Process[] = [
     setor: "Licitações",
     responsavel: "Ana Beatriz Lima",
     responsavelUsername: "ana.lima",
+    analistaNome: "Thiago Martins",
+    analistaUsername: "thiago.martins",
     status: "concluido",
     diasDesdeUltimaRevisao: 30,
     dataEnvioRevisao: "15/03/2025",
@@ -199,6 +206,8 @@ export const mockProcesses: Process[] = [
     setor: "Patrimônio",
     responsavel: "Roberto Almeida",
     responsavelUsername: "roberto.almeida",
+    analistaNome: "Paula Ribeiro",
+    analistaUsername: "paula.ribeiro",
     status: "em_revisao",
     diasDesdeUltimaRevisao: 200,
     dataEnvioRevisao: "25/09/2024",
@@ -225,6 +234,8 @@ export const mockProcesses: Process[] = [
     setor: "RH",
     responsavel: "Fernanda Costa",
     responsavelUsername: "fernanda.costa",
+    analistaNome: "Renata Souza",
+    analistaUsername: "renata.souza",
     status: "concluido",
     diasDesdeUltimaRevisao: 60,
     dataEnvioRevisao: "13/02/2025",
@@ -250,6 +261,8 @@ export const mockProcesses: Process[] = [
     setor: "Convênios",
     responsavel: "Mariana Pereira Da Silva",
     responsavelUsername: "mariana.silva",
+    analistaNome: "Equipe SECGOV",
+    analistaUsername: "equipe.secgov",
     status: "em_ajuste",
     diasDesdeUltimaRevisao: 15,
     dataEnvioRevisao: "20/04/2025",
@@ -362,6 +375,8 @@ export const mockProcesses: Process[] = [
     setor: "Financeiro",
     responsavel: "Juliana Mendes",
     responsavelUsername: "juliana.mendes",
+    analistaNome: "Thiago Martins",
+    analistaUsername: "thiago.martins",
     status: "pendente_revisao_anual",
     diasDesdeUltimaRevisao: 366,
     dataEnvioRevisao: "28/04/2025",

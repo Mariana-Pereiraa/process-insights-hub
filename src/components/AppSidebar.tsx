@@ -1,5 +1,5 @@
 import { Link, useLocation } from "@tanstack/react-router";
-import { Home, FileText, BarChart3, Building2, Users, LogOut, ShieldCheck, Inbox } from "lucide-react";
+import { Home, FileText, BarChart3, Building2, Users, LogOut, ShieldCheck, Inbox, UserCog } from "lucide-react";
 import { useProfile } from "@/contexts/ProfileContext";
 
 export function AppSidebar() {
@@ -7,26 +7,31 @@ export function AppSidebar() {
   const currentPath = location.pathname;
   const { profile } = useProfile();
 
-  const navGroups =
-    profile.role === "secgov"
-      ? [
-          { label: "Início", items: [{ title: "Início", url: "/", icon: Home }] },
-          { label: "Acompanhamento", items: [{ title: "Acompanhamento", url: "/", icon: ShieldCheck }] },
-          { label: "Processos", items: [{ title: "Processos", url: "/processos", icon: FileText }] },
-          { label: "Relatórios", items: [{ title: "Relatórios", url: "/relatorios", icon: BarChart3 }] },
-          {
-            label: "Unidades",
-            items: [
-              { title: "Unidades", url: "/unidades", icon: Building2 },
-              { title: "Usuários", url: "/usuarios", icon: Users },
-            ],
-          },
-        ]
-      : [
-          { label: "Início", items: [{ title: "Início", url: "/unidade", icon: Home }] },
-          { label: "Minha Unidade", items: [{ title: "Minha Unidade", url: "/unidade", icon: Inbox }] },
-          { label: "Processos", items: [{ title: "Meus processos", url: "/unidade", icon: FileText }] },
-        ];
+  const isSecgovLike = profile.role === "secgov" || profile.role === "secgov_responsavel";
+
+  const navGroups = isSecgovLike
+    ? [
+        { label: "Início", items: [{ title: "Início", url: "/", icon: Home }] },
+        { label: "Acompanhamento", items: [{ title: "Acompanhamento", url: "/", icon: ShieldCheck }] },
+        { label: "Processos", items: [{ title: "Processos", url: "/processos", icon: FileText }] },
+        {
+          label: "Analistas",
+          items: [{ title: "Responsáveis por análise", url: "/analistas", icon: UserCog }],
+        },
+        { label: "Relatórios", items: [{ title: "Relatórios", url: "/relatorios", icon: BarChart3 }] },
+        {
+          label: "Unidades",
+          items: [
+            { title: "Unidades", url: "/unidades", icon: Building2 },
+            { title: "Usuários", url: "/usuarios", icon: Users },
+          ],
+        },
+      ]
+    : [
+        { label: "Início", items: [{ title: "Início", url: "/unidade", icon: Home }] },
+        { label: "Minha Unidade", items: [{ title: "Minha Unidade", url: "/unidade", icon: Inbox }] },
+        { label: "Processos", items: [{ title: "Meus processos", url: "/unidade", icon: FileText }] },
+      ];
 
   return (
     <aside className="flex flex-col w-60 min-h-screen bg-sidebar-bg text-sidebar-foreground shrink-0">

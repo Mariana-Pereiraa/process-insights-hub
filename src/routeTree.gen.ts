@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as UnidadeRouteImport } from './routes/unidade'
 import { Route as PrazoRevisaoRouteImport } from './routes/prazo-revisao'
 import { Route as NotificacoesRouteImport } from './routes/notificacoes'
+import { Route as AnalistasRouteImport } from './routes/analistas'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as RevisaoProcessIdRouteImport } from './routes/revisao.$processId'
 import { Route as HistoricoProcessIdRouteImport } from './routes/historico.$processId'
@@ -29,6 +30,11 @@ const PrazoRevisaoRoute = PrazoRevisaoRouteImport.update({
 const NotificacoesRoute = NotificacoesRouteImport.update({
   id: '/notificacoes',
   path: '/notificacoes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AnalistasRoute = AnalistasRouteImport.update({
+  id: '/analistas',
+  path: '/analistas',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -49,6 +55,7 @@ const HistoricoProcessIdRoute = HistoricoProcessIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/analistas': typeof AnalistasRoute
   '/notificacoes': typeof NotificacoesRoute
   '/prazo-revisao': typeof PrazoRevisaoRoute
   '/unidade': typeof UnidadeRoute
@@ -57,6 +64,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/analistas': typeof AnalistasRoute
   '/notificacoes': typeof NotificacoesRoute
   '/prazo-revisao': typeof PrazoRevisaoRoute
   '/unidade': typeof UnidadeRoute
@@ -66,6 +74,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/analistas': typeof AnalistasRoute
   '/notificacoes': typeof NotificacoesRoute
   '/prazo-revisao': typeof PrazoRevisaoRoute
   '/unidade': typeof UnidadeRoute
@@ -76,6 +85,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/analistas'
     | '/notificacoes'
     | '/prazo-revisao'
     | '/unidade'
@@ -84,6 +94,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/analistas'
     | '/notificacoes'
     | '/prazo-revisao'
     | '/unidade'
@@ -92,6 +103,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/analistas'
     | '/notificacoes'
     | '/prazo-revisao'
     | '/unidade'
@@ -101,6 +113,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AnalistasRoute: typeof AnalistasRoute
   NotificacoesRoute: typeof NotificacoesRoute
   PrazoRevisaoRoute: typeof PrazoRevisaoRoute
   UnidadeRoute: typeof UnidadeRoute
@@ -131,6 +144,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof NotificacoesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/analistas': {
+      id: '/analistas'
+      path: '/analistas'
+      fullPath: '/analistas'
+      preLoaderRoute: typeof AnalistasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -157,6 +177,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AnalistasRoute: AnalistasRoute,
   NotificacoesRoute: NotificacoesRoute,
   PrazoRevisaoRoute: PrazoRevisaoRoute,
   UnidadeRoute: UnidadeRoute,
@@ -166,12 +187,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-  }
-}

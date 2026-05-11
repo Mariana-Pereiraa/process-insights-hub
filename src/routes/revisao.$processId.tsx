@@ -1,6 +1,6 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useState } from "react";
-import { ArrowLeft, ChevronDown, ChevronRight, AlertTriangle, CheckCircle2, FileText, Shield, Activity, AlertCircle, History, MoreVertical, ClipboardList } from "lucide-react";
+import { ArrowLeft, ChevronDown, ChevronRight, AlertTriangle, CheckCircle2, FileText, Shield, Activity, AlertCircle, History, MoreVertical, ClipboardList, UserCog } from "lucide-react";
 import { AppSidebar } from "@/components/AppSidebar";
 import { Topbar } from "@/components/Topbar";
 import { StatusBadge } from "@/components/StatusBadge";
@@ -8,6 +8,7 @@ import { HistoricoTimeline } from "@/components/HistoricoTimeline";
 import { mockProcesses, type ProcessStep, type Risk } from "@/data/mock-processes";
 import { Button } from "@/components/ui/button";
 import { useProfile } from "@/contexts/ProfileContext";
+import { analistasDisponiveis } from "@/lib/process-status";
 
 export const Route = createFileRoute("/revisao/$processId")({
   component: ProcessReview,
@@ -48,6 +49,15 @@ const [revisaoIniciada, setRevisaoIniciada] = useState(
 );
 const [showCancelarEnvioModal, setShowCancelarEnvioModal] = useState(false);
 const [showCancelarRevisaoModal, setShowCancelarRevisaoModal] = useState(false);
+const [showDesignarAnalista, setShowDesignarAnalista] = useState(false);
+const [analistaAtual, setAnalistaAtual] = useState<{ nome: string; username: string } | null>(
+  process.analistaNome && process.analistaUsername
+    ? { nome: process.analistaNome, username: process.analistaUsername }
+    : null
+);
+const [analistaSelecionado, setAnalistaSelecionado] = useState<string>(
+  process.analistaUsername ?? ""
+);
 
   const toggleStep = (id: number) => {
     setOpenSteps((prev) => {
@@ -82,7 +92,7 @@ const [showCancelarRevisaoModal, setShowCancelarRevisaoModal] = useState(false);
 <div className="flex flex-wrap items-center gap-2">
 
   {/* BOTÕES APENAS PARA SECGOV */}
-  {profile.role === "secgov" && (
+  {(profile.role === "secgov" || profile.role === "secgov_responsavel") && (
     <>
       {!revisaoIniciada ? (
         <Button
@@ -212,22 +222,34 @@ const [showCancelarRevisaoModal, setShowCancelarRevisaoModal] = useState(false);
                     <span className="font-medium text-foreground">{process.setor}</span>
                   </div>
                   <div>
-                    <span className="text-muted-foreground">Responsável: </span>
+                    <span className="text-muted-foreground">Responsável (criou): </span>
                     <span className="font-medium text-foreground">{process.responsavel}</span>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground">Resp. pela análise: </span>
+                    <span className="font-medium text-foreground">
+                      {analistaAtual ? analistaAtual.nome : <em className="text-muted-foreground italic">Não designado</em>}
+                    </span>
                   </div>
                 </div>
               </div>
               <div className="flex flex-col items-end gap-3">
-  <StatusBadge status={statusAtual} />
+                <StatusBadge status={statusAtual} />
 
-  
-
-  {/* BOTÃO APENAS PARA GABINETE */}
-  {/* BOTÕES APENAS PARA GABINETE */}
-
-</div>
-  </div>
-</div>
+                {profile.role === "secgov_responsavel" && (
+                  <Button
+                    onClick={() => setShowDesignarAnalista(true)}
+                    variant="outline"
+                    size="sm"
+                    className="gap-2"
+                  >
+                    <UserCog className="w-4 h-4" />
+                    {analistaAtual ? "Alterar analista" : "Designar analista"}
+                  </Button>
+                )}
+              </div>
+            </div>
+          </div>
 
           {/* Steps navigation */}
           <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-6">
@@ -560,6 +582,55 @@ const [showCancelarRevisaoModal, setShowCancelarRevisaoModal] = useState(false);
           className="bg-primary text-white"
         >
           Confirmar Cancelamento
+        </Button>
+      </div>
+    </div>
+  </div>
+)}
+
+{/* Modal: Designar analista (SecGovResponsável) */}
+{showDesignarAnalista && (
+  <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
+    <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl">
+      <div className="flex items-center gap-2 mb-3">
+        <UserCog className="w-5 h-5 text-violet-600" />
+        <h2 className="text-lg font-bold">Designar responsável pela análise</h2>
+      </div>
+      <p className="text-sm text-muted-foreground mb-4">
+        Escolha quem ficará responsável por analisar este processo.
+        Apenas o perfil <strong>Responsável SECGOV</strong> pode fazer essa atribuição.
+      </p>
+
+      <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">
+        Analista
+      </label>
+      <select
+        value={analistaSelecionado}
+        onChange={(e) => setAnalistaSelecionado(e.target.value)}
+        className="w-full px-4 py-2.5 rounded-xl border border-input bg-background text-sm mb-5"
+      >
+        <option value="">— Selecione —</option>
+        {analistasDisponiveis.map((a) => (
+          <option key={a.username} value={a.username}>
+            {a.nome} · {a.cargo}
+          </option>
+        ))}
+      </select>
+
+      <div className="flex justify-end gap-3">
+        <Button variant="outline" onClick={() => setShowDesignarAnalista(false)}>
+          Cancelar
+        </Button>
+        <Button
+          disabled={!analistaSelecionado}
+          onClick={() => {
+            const a = analistasDisponiveis.find((x) => x.username === analistaSelecionado);
+            if (a) setAnalistaAtual({ nome: a.nome, username: a.username });
+            setShowDesignarAnalista(false);
+          }}
+          className="bg-violet-600 hover:bg-violet-700 text-white"
+        >
+          Confirmar designação
         </Button>
       </div>
     </div>

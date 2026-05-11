@@ -24,7 +24,7 @@ function Dashboard() {
   const [filterUnidade, setFilterUnidade] = useState("");
   const [filterStatus, setFilterStatus] = useState<"todos" | ProcessStatus>("todos");
   useEffect(() => {
-    if (profile.role === "secgov") {
+    if ((profile.role === "secgov" || profile.role === "secgov_responsavel")) {
       setFilterStatus("em_revisao");
     } else {
       setFilterStatus("todos");
@@ -129,7 +129,7 @@ const [novoAno, setNovoAno] = useState("");
       <div className="flex-1 flex flex-col min-w-0">
       <Topbar
   title={
-    profile.role === "secgov"
+    (profile.role === "secgov" || profile.role === "secgov_responsavel")
       ? "Acompanhamento"
       : "Processos"
   }
@@ -177,7 +177,7 @@ const [novoAno, setNovoAno] = useState("");
 
 {/* SUBSTITUA TODA A ÁREA DOS CARDS DO SECGOV POR ESTA */}
 
-{profile.role === "secgov" ? (
+{(profile.role === "secgov" || profile.role === "secgov_responsavel") ? (
   <>
     {/* Header da seção */}
     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-5">
@@ -371,7 +371,7 @@ const [novoAno, setNovoAno] = useState("");
                           
 
                           {/* SECGOV */}
-                          {profile.role === "secgov" && (
+                          {(profile.role === "secgov" || profile.role === "secgov_responsavel") && (
                             <>
                             <Link
                                 to="/revisao/$processId"

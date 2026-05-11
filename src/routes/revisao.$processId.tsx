@@ -82,7 +82,7 @@ const [showCancelarRevisaoModal, setShowCancelarRevisaoModal] = useState(false);
 <div className="flex flex-wrap items-center gap-2">
 
   {/* BOTÕES APENAS PARA SECGOV */}
-  {profile.role === "secgov" && (
+  {(profile.role === "secgov" || profile.role === "secgov_responsavel") && (
     <>
       {!revisaoIniciada ? (
         <Button

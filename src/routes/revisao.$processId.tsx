@@ -212,22 +212,34 @@ const [showCancelarRevisaoModal, setShowCancelarRevisaoModal] = useState(false);
                     <span className="font-medium text-foreground">{process.setor}</span>
                   </div>
                   <div>
-                    <span className="text-muted-foreground">Responsável: </span>
+                    <span className="text-muted-foreground">Responsável (criou): </span>
                     <span className="font-medium text-foreground">{process.responsavel}</span>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground">Resp. pela análise: </span>
+                    <span className="font-medium text-foreground">
+                      {analistaAtual ? analistaAtual.nome : <em className="text-muted-foreground italic">Não designado</em>}
+                    </span>
                   </div>
                 </div>
               </div>
               <div className="flex flex-col items-end gap-3">
-  <StatusBadge status={statusAtual} />
+                <StatusBadge status={statusAtual} />
 
-  
-
-  {/* BOTÃO APENAS PARA GABINETE */}
-  {/* BOTÕES APENAS PARA GABINETE */}
-
-</div>
-  </div>
-</div>
+                {profile.role === "secgov_responsavel" && (
+                  <Button
+                    onClick={() => setShowDesignarAnalista(true)}
+                    variant="outline"
+                    size="sm"
+                    className="gap-2"
+                  >
+                    <UserCog className="w-4 h-4" />
+                    {analistaAtual ? "Alterar analista" : "Designar analista"}
+                  </Button>
+                )}
+              </div>
+            </div>
+          </div>
 
           {/* Steps navigation */}
           <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-6">

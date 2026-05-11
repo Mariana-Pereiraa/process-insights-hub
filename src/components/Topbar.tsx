@@ -23,7 +23,7 @@ export function Topbar({ title, onToggleSidebar }: TopbarProps) {
     return () => document.removeEventListener("mousedown", onClick);
   }, []);
 
-  const roles: ProfileRole[] = ["secgov", "unidade"];
+  const roles: ProfileRole[] = ["secgov", "secgov_responsavel", "unidade"];
 
   return (
     <header className="h-16 border-b border-border bg-card flex items-center justify-between px-6 shrink-0">
@@ -85,12 +85,16 @@ export function Topbar({ title, onToggleSidebar }: TopbarProps) {
                     }`}
                   >
                     <div className={`w-9 h-9 rounded-lg flex items-center justify-center text-xs font-bold shrink-0 ${
-                      r === "secgov" ? "bg-blue-100 text-blue-700" : "bg-emerald-100 text-emerald-700"
+                      r === "secgov"
+                        ? "bg-blue-100 text-blue-700"
+                        : r === "secgov_responsavel"
+                          ? "bg-violet-100 text-violet-700"
+                          : "bg-emerald-100 text-emerald-700"
                     }`}>
-                      {p.unidadeSigla}
+                      {r === "secgov_responsavel" ? "RESP" : p.unidadeSigla}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-foreground">{p.unidadeNome}</p>
+                      <p className="text-sm font-semibold text-foreground">{p.label}</p>
                       <p className="text-xs text-muted-foreground truncate">{p.userName}</p>
                     </div>
                     {active && (

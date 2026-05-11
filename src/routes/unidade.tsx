@@ -29,6 +29,7 @@ import { mockProcesses, type Process } from "@/data/mock-processes";
 import { mockNotifications, type NotificationType } from "@/data/mock-notifications";
 import { useProfile } from "@/contexts/ProfileContext";
 import { cn } from "@/lib/utils";
+import { calcularPrazoAjuste, DIAS_PRAZO_AJUSTE } from "@/lib/process-status";
 
 export const Route = createFileRoute("/unidade")({
   component: UnidadePage,

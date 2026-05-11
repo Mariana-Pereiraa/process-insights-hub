@@ -1,6 +1,6 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useState } from "react";
-import { ArrowLeft, ChevronDown, ChevronRight, AlertTriangle, CheckCircle2, FileText, Shield, Activity, AlertCircle, History, MoreVertical, ClipboardList } from "lucide-react";
+import { ArrowLeft, ChevronDown, ChevronRight, AlertTriangle, CheckCircle2, FileText, Shield, Activity, AlertCircle, History, MoreVertical, ClipboardList, UserCog } from "lucide-react";
 import { AppSidebar } from "@/components/AppSidebar";
 import { Topbar } from "@/components/Topbar";
 import { StatusBadge } from "@/components/StatusBadge";
@@ -8,6 +8,7 @@ import { HistoricoTimeline } from "@/components/HistoricoTimeline";
 import { mockProcesses, type ProcessStep, type Risk } from "@/data/mock-processes";
 import { Button } from "@/components/ui/button";
 import { useProfile } from "@/contexts/ProfileContext";
+import { analistasDisponiveis } from "@/lib/process-status";
 
 export const Route = createFileRoute("/revisao/$processId")({
   component: ProcessReview,
@@ -48,6 +49,15 @@ const [revisaoIniciada, setRevisaoIniciada] = useState(
 );
 const [showCancelarEnvioModal, setShowCancelarEnvioModal] = useState(false);
 const [showCancelarRevisaoModal, setShowCancelarRevisaoModal] = useState(false);
+const [showDesignarAnalista, setShowDesignarAnalista] = useState(false);
+const [analistaAtual, setAnalistaAtual] = useState<{ nome: string; username: string } | null>(
+  process.analistaNome && process.analistaUsername
+    ? { nome: process.analistaNome, username: process.analistaUsername }
+    : null
+);
+const [analistaSelecionado, setAnalistaSelecionado] = useState<string>(
+  process.analistaUsername ?? ""
+);
 
   const toggleStep = (id: number) => {
     setOpenSteps((prev) => {

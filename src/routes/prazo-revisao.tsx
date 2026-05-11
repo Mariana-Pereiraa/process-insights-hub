@@ -6,7 +6,7 @@ import { useState } from "react";
 import { AppSidebar } from "@/components/AppSidebar";
 import { Topbar } from "@/components/Topbar";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Pencil, Trash2 } from "lucide-react";
 
 export const Route = createFileRoute("/prazo-revisao")({
   component: PrazoRevisao,
@@ -15,13 +15,15 @@ export const Route = createFileRoute("/prazo-revisao")({
   }),
 });
 
+
 function PrazoRevisao() {
     const [prazoGeralRevisao, setPrazoGeralRevisao] = useState<
       { ano: string; prazo: string }[]
     >([]);
   
-    const [novoAno, setNovoAno] = useState("");
     const [novoPrazo, setNovoPrazo] = useState("");
+    const ano = novoPrazo.split("-")[0];
+    const [editandoAno, setEditandoAno] = useState<string | null>(null);
   
     const prazosOrdenados = [...prazoGeralRevisao].sort(
       (a, b) => Number(b.ano) - Number(a.ano)
@@ -52,37 +54,34 @@ function PrazoRevisao() {
   
               {/* Inputs */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
-                <input
-                  type="number"
-                  placeholder="Ano (ex: 2026)"
-                  value={novoAno}
-                  onChange={(e) => setNovoAno(e.target.value)}
-                  className="px-4 py-2 rounded-xl border"
-                />
+  
+                
   
                 <input
                   type="date"
                   value={novoPrazo}
                   onChange={(e) => setNovoPrazo(e.target.value)}
-                  className="px-4 py-2 rounded-xl border"
-                />
+                  className="px-4 py-2.5 rounded-xl border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                  />
   
-                <Button
-                  onClick={() => {
-                    if (!novoAno || !novoPrazo) return;
-  
-                    setPrazoGeralRevisao((prev) => [
-                      ...prev.filter((p) => p.ano !== novoAno), // garante 1 por ano
-                      { ano: novoAno, prazo: novoPrazo },
-                    ]);
-  
-                    setNovoAno("");
-                    setNovoPrazo("");
-                  }}
-                  className="bg-blue-600 text-white"
-                >
-                  Salvar
-                </Button>
+  <Button
+    onClick={() => {
+      if (!novoPrazo) return;
+
+      const ano = novoPrazo.split("-")[0];
+
+      setPrazoGeralRevisao((prev) => [
+        ...prev.filter((p) => p.ano !== ano), // mantém 1 por ano
+        { ano, prazo: novoPrazo },
+      ]);
+
+      setNovoPrazo("");
+      setEditandoAno(null);
+    }}
+    className="bg-blue-600 text-white"
+  >
+    {editandoAno ? "Atualizar" : "Salvar"}
+  </Button>
               </div>
   
               {/* Tabela */}
@@ -114,18 +113,30 @@ function PrazoRevisao() {
                         </td>
   
                         <td className="px-4 py-3 text-right">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="text-red-600 border-red-200 hover:bg-red-50"
-                            onClick={() =>
-                              setPrazoGeralRevisao((prev) =>
-                                prev.filter((p) => p.ano !== item.ano)
-                              )
-                            }
-                          >
-                            Remover
-                          </Button>
+                          {/* Editar */}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              setNovoPrazo(item.prazo);
+              setEditandoAno(item.ano);
+            }}
+          >
+            <Pencil className="w-4 h-4" />
+          </Button>
+                           {/* Remover */}
+          <Button
+            variant="outline"
+            size="sm"
+            className="text-red-600 border-red-200 hover:bg-red-50"
+            onClick={() =>
+              setPrazoGeralRevisao((prev) =>
+                prev.filter((p) => p.ano !== item.ano)
+              )
+            }
+          >
+            <Trash2 className="w-4 h-4" />
+          </Button>
                         </td>
                       </tr>
                     ))}

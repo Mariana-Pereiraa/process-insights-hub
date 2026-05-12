@@ -1,12 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState, useMemo, useEffect } from "react";
-import { CircleChevronDown, RotateCcw, CheckCircle2, Search, ClipboardList, History, Pencil, Trash2 } from "lucide-react";
+import { CircleChevronDown, RotateCcw, CheckCircle2, Search, ClipboardList, History, Pencil, Trash2, UserCog, Users, AlertTriangle } from "lucide-react";
 import { AppSidebar } from "@/components/AppSidebar";
 import { Topbar } from "@/components/Topbar";
 import { StatusBadge } from "@/components/StatusBadge";
 import { mockProcesses, type ProcessStatus } from "@/data/mock-processes";
 import { Button } from "@/components/ui/button";
-import { processStatusOptions } from "@/lib/process-status";
+import { processStatusOptions, analistasDisponiveis } from "@/lib/process-status";
 import { useProfile } from "@/contexts/ProfileContext";
 
 export const Route = createFileRoute("/")({
@@ -18,6 +18,35 @@ export const Route = createFileRoute("/")({
     ],
   }),
 });
+const addBusinessDays = (startDate: Date, days: number) => {
+  const date = new Date(startDate);
+  let addedDays = 0;
+  while (addedDays < days) {
+    date.setDate(date.getDate() + 1);
+    if (date.getDay() !== 0 && date.getDay() !== 6) { // 0 = Domingo, 6 = Sábado
+      addedDays++;
+    }
+  }
+  return date;
+};
+const getRemainingBusinessDays = (deadline: Date) => {
+  const hoje = new Date();
+  hoje.setHours(0, 0, 0, 0);
+  deadline.setHours(0, 0, 0, 0);
+
+  let count = 0;
+  const tempDate = new Date(hoje);
+
+  if (tempDate > deadline) return -1; // Vencido
+
+  while (tempDate < deadline) {
+    tempDate.setDate(tempDate.getDate() + 1);
+    if (tempDate.getDay() !== 0 && tempDate.getDay() !== 6) {
+      count++;
+    }
+  }
+  return count;
+};
 
 function Dashboard() {
   const { profile } = useProfile();
@@ -42,8 +71,29 @@ function Dashboard() {
       prazo: "2026-05-10",
     },
   ]);
+  const [showDesignarAnalista, setShowDesignarAnalista] = useState(false);
+const [processForAnalyst, setProcessForAnalyst] = useState<any>(null);
+const [analistaSelecionado, setAnalistaSelecionado] = useState("");
+
+// Dentro do Dashboard, antes do return:
+const ajustesUrgentes = useMemo(() => {
+  return mockProcesses.filter(p => p.status === "em_ajuste").map(p => {
+    // Simulando que o ajuste foi solicitado na 'dataEnvioRevisao' 
+    // Em um cenário real, você usaria p.dataSolicitacaoAjuste
+    const [d, m, y] = p.dataEnvioRevisao.split("/");
+    const dataSolicitacao = new Date(Number(y), Number(m) - 1, Number(d));
+    const prazoFinal = addBusinessDays(dataSolicitacao, 15);
+    const diasRestantes = getRemainingBusinessDays(prazoFinal);
+
+    return { ...p, prazoFinal, diasRestantes };
+  });
+}, []);
+
+// Define se o alerta estratégico deve aparecer (prazo <= 5 dias)
+const temAjusteCritico = ajustesUrgentes.some(a => a.diasRestantes >= 0 && a.diasRestantes <= 5);
+
   const [novoPrazo, setNovoPrazo] = useState("");
-const [novoAno, setNovoAno] = useState("");
+  const [novoAno, setNovoAno] = useState("");
   const [showPrazoNotification, setShowPrazoNotification] = useState(false);
   useEffect(() => {
     if (profile.role !== "secgov") {
@@ -133,8 +183,24 @@ const [novoAno, setNovoAno] = useState("");
       ? "Acompanhamento"
       : "Processos"
   }
+
 />
        <main className="flex-1 p-6 overflow-auto">
+        {/* ADICIONE LOGO NO INÍCIO DO <main>, ACIMA DAS NOTIFICAÇÕES EXISTENTES */}
+{temAjusteCritico && (
+  <div className="mb-6 rounded-2xl border-l-4 border-l-amber-500 border border-amber-200 bg-amber-50 p-4 shadow-sm animate-pulse">
+    <div className="flex items-start gap-3">
+      <AlertTriangle className="w-5 h-5 text-amber-600 mt-0.5" />
+      <div>
+        <h3 className="text-sm font-bold text-amber-900">Atenção: Ajustes com Prazo Próximo</h3>
+        <p className="text-xs text-amber-700 mt-1">
+          Existem processos devolvidos que precisam de correção em menos de 5 dias úteis. 
+          {profile.role === 'unidade' ? " Por favor, realize as alterações solicitadas." : " Acompanhe o cumprimento dos prazos pelas unidades."}
+        </p>
+      </div>
+    </div>
+  </div>
+)}
         {showPrazoNotification &&
   profile.role !== "secgov" &&
   prazoMaisRecente && (
@@ -179,6 +245,7 @@ const [novoAno, setNovoAno] = useState("");
 
 {(profile.role === "secgov" || profile.role === "secgov_responsavel") ? (
   <>
+
     {/* Header da seção */}
     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-5">
       <div>
@@ -186,15 +253,27 @@ const [novoAno, setNovoAno] = useState("");
           Painel de Revisão
         </h2>
         <p className="text-sm text-muted-foreground">
-          Acompanhe os processos e defina o prazo geral de revisão
+          Acompanhe os processos e gerencie a equipe de análise
         </p>
       </div>
+      <div className="flex items-center gap-3">
+        {/* Botão visível apenas para o Responsável SECGOV */}
+        {profile.role === "secgov_responsavel" && (
+          <Link to="/gerenciamento-analistas">
+            <Button className="bg-violet-600 hover:bg-violet-700 text-white rounded-xl px-5 py-2.5 shadow-sm gap-2">
+              <Users className="w-4 h-4" />
+              Gerenciamento de Analistas
+            </Button>
+          </Link>
+        )}
 
-      <Link to="/prazo-revisao">
-  <Button className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl px-5 py-2.5 shadow-sm">
-    Definir Prazo Geral
-  </Button>
-</Link>
+        <Link to="/prazo-revisao">
+          <Button className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl px-5 py-2.5 shadow-sm">
+            Definir Prazo Geral
+          </Button>
+        </Link>
+      </div>
+      
     </div>
 
     {/* Cards menores */}
@@ -349,6 +428,17 @@ const [novoAno, setNovoAno] = useState("");
                       key={process.id}
                       className="border-b border-border/50 transition-colors hover:bg-muted/30"
                     >    
+                    <td className="px-5 py-4">
+  <div className="flex flex-col gap-1">
+    <StatusBadge status={process.status} />
+    {process.status === "em_ajuste" && (
+      <span className="text-[10px] font-medium text-amber-600 flex items-center gap-1">
+        <RotateCcw className="w-3 h-3" />
+        Prazo: 15 dias úteis
+      </span>
+    )}
+  </div>
+</td>
                     <td className="px-5 py-4 text-sm font-medium text-foreground">{process.nome}</td>
                       <td className="px-5 py-4 text-sm text-muted-foreground">
                         <span title={process.unidade} className="border-b border-dotted border-muted-foreground/40">
@@ -373,6 +463,25 @@ const [novoAno, setNovoAno] = useState("");
                           {/* SECGOV */}
                           {(profile.role === "secgov" || profile.role === "secgov_responsavel") && (
                             <>
+
+
+                            {profile.role === "secgov_responsavel" && (
+                              
+      <Button
+        variant="outline"
+        size="sm"
+        className="gap-1.5 border-violet-200 text-violet-600 hover:bg-violet-50"
+        onClick={() => {
+          setProcessForAnalyst(process);
+          setAnalistaSelecionado(process.analistaUsername || "");
+          setShowDesignarAnalista(true);
+        }}
+      >
+        <UserCog className="w-4 h-4" />
+      </Button>
+    )}
+
+
                             <Link
                                 to="/revisao/$processId"
                                 params={{ processId: process.id }}
@@ -480,6 +589,49 @@ Revisar                                </Button>
           )}
         </main>
       </div>
+
+      {showDesignarAnalista && processForAnalyst && (
+  <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
+    <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl">
+      <div className="flex items-center gap-2 mb-3">
+        <UserCog className="w-5 h-5 text-violet-600" />
+        <h2 className="text-lg font-bold">Designar Analista</h2>
+      </div>
+      <p className="text-sm text-muted-foreground mb-4">
+        Processo: <strong>{processForAnalyst.nome}</strong>
+      </p>
+
+      <select
+        value={analistaSelecionado}
+        onChange={(e) => setAnalistaSelecionado(e.target.value)}
+        className="w-full px-4 py-2.5 rounded-xl border border-input bg-background text-sm mb-5"
+      >
+        <option value="">— Selecione —</option>
+        {analistasDisponiveis.map((a) => (
+          <option key={a.username} value={a.username}>
+            {a.nome} · {a.cargo}
+          </option>
+        ))}
+      </select>
+
+      <div className="flex justify-end gap-3">
+        <Button variant="outline" onClick={() => setShowDesignarAnalista(false)}>
+          Cancelar
+        </Button>
+        <Button
+          disabled={!analistaSelecionado}
+          onClick={() => {
+            console.log("Atribuindo analista", analistaSelecionado, "ao processo", processForAnalyst.id);
+            setShowDesignarAnalista(false);
+          }}
+          className="bg-violet-600 hover:bg-violet-700 text-white"
+        >
+          Confirmar
+        </Button>
+      </div>
+    </div>
+  </div>
+)}
     </div>
   );
 }

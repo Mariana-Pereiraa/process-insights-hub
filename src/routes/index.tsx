@@ -428,17 +428,6 @@ const temAjusteCritico = ajustesUrgentes.some(a => a.diasRestantes >= 0 && a.dia
                       key={process.id}
                       className="border-b border-border/50 transition-colors hover:bg-muted/30"
                     >    
-                    <td className="px-5 py-4">
-  <div className="flex flex-col gap-1">
-    <StatusBadge status={process.status} />
-    {process.status === "em_ajuste" && (
-      <span className="text-[10px] font-medium text-amber-600 flex items-center gap-1">
-        <RotateCcw className="w-3 h-3" />
-        Prazo: 15 dias úteis
-      </span>
-    )}
-  </div>
-</td>
                     <td className="px-5 py-4 text-sm font-medium text-foreground">{process.nome}</td>
                       <td className="px-5 py-4 text-sm text-muted-foreground">
                         <span title={process.unidade} className="border-b border-dotted border-muted-foreground/40">
@@ -450,7 +439,17 @@ const temAjusteCritico = ajustesUrgentes.some(a => a.diasRestantes >= 0 && a.dia
                           {process.responsavelUsername}
                         </span>
                       </td>
-                      <td className="px-5 py-4"><StatusBadge status={process.status} /></td>
+                      <td className="px-5 py-4">
+  <div className="flex flex-col gap-1">
+    <StatusBadge status={process.status} />
+    {process.status === "em_ajuste" && (
+      <span className="text-[10px] font-medium text-amber-600 flex items-center gap-1">
+        <RotateCcw className="w-3 h-3" />
+        Prazo: 15 dias úteis
+      </span>
+    )}
+  </div>
+</td>
                       <td className="px-5 py-4 text-sm text-muted-foreground">
                         {process.dataEnvioRevisao}
                       </td>

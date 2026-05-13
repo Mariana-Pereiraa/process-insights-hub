@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState, useMemo, useEffect } from "react";
-import { CircleChevronDown, RotateCcw, CheckCircle2, Search, ClipboardList, History, Pencil, Trash2, UserCog, Users, AlertTriangle } from "lucide-react";
+import { CircleChevronDown, RotateCcw, CheckCircle2, Search, ClipboardList, History, Pencil, Trash2, UserCog, Users, AlertTriangle, AlertCircle } from "lucide-react";
 import { AppSidebar } from "@/components/AppSidebar";
 import { Topbar } from "@/components/Topbar";
 import { StatusBadge } from "@/components/StatusBadge";
@@ -8,6 +8,7 @@ import { mockProcesses, type ProcessStatus } from "@/data/mock-processes";
 import { Button } from "@/components/ui/button";
 import { processStatusOptions, analistasDisponiveis } from "@/lib/process-status";
 import { useProfile } from "@/contexts/ProfileContext";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/")({
   component: Dashboard,
@@ -48,6 +49,27 @@ const getRemainingBusinessDays = (deadline: Date) => {
   return count;
 };
 
+const getElapsedBusinessDays = (startDateStr: string) => {
+  const [d, m, y] = startDateStr.split("/");
+  const start = new Date(Number(y), Number(m) - 1, Number(d));
+  const hoje = new Date();
+  hoje.setHours(0, 0, 0, 0);
+  
+  let count = 0;
+  const tempDate = new Date(start);
+  
+  // Se a data de início for hoje ou futura, estamos no dia 0 ou 1
+  if (tempDate > hoje) return 0;
+
+  while (tempDate < hoje) {
+    tempDate.setDate(tempDate.getDate() + 1);
+    if (tempDate.getDay() !== 0 && tempDate.getDay() !== 6) {
+      count++;
+    }
+  }
+  return count;
+};
+
 function Dashboard() {
   const { profile } = useProfile();
   const [filterUnidade, setFilterUnidade] = useState("");
@@ -71,6 +93,10 @@ function Dashboard() {
       prazo: "2026-05-10",
     },
   ]);
+
+  const [showDeadlineModal, setShowDeadlineModal] = useState(false);
+const [processForDeadline, setProcessForDeadline] = useState<any>(null);
+
   const [showDesignarAnalista, setShowDesignarAnalista] = useState(false);
 const [processForAnalyst, setProcessForAnalyst] = useState<any>(null);
 const [analistaSelecionado, setAnalistaSelecionado] = useState("");
@@ -96,7 +122,7 @@ const temAjusteCritico = ajustesUrgentes.some(a => a.diasRestantes >= 0 && a.dia
   const [novoAno, setNovoAno] = useState("");
   const [showPrazoNotification, setShowPrazoNotification] = useState(false);
   useEffect(() => {
-    if (profile.role !== "secgov") {
+    if (profile.role !== "secgov" && profile.role !== "secgov_responsavel") {
       setShowPrazoNotification(true);
     }
   }, [profile.role]);
@@ -202,7 +228,7 @@ const temAjusteCritico = ajustesUrgentes.some(a => a.diasRestantes >= 0 && a.dia
   </div>
 )}
         {showPrazoNotification &&
-  profile.role !== "secgov" &&
+  profile.role !== "secgov" && profile.role !== "secgov_responsavel" &&
   prazoMaisRecente && (
     <div className="mb-6 rounded-2xl border border-blue-200 bg-blue-50 p-5 shadow-sm transition-all">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -418,8 +444,9 @@ const temAjusteCritico = ajustesUrgentes.some(a => a.diasRestantes >= 0 && a.dia
                     <th className="text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider px-5 py-3">Unidade</th>
                     <th className="text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider px-5 py-3">Responsável</th>
                     <th className="text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider px-5 py-3">Status</th>
-                    <th className="text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider px-5 py-3">Envio</th>
-                    <th className="text-right text-xs font-semibold text-muted-foreground uppercase tracking-wider px-5 py-3">Ações</th>
+                    <th className="text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider px-5 py-3">
+  {(profile.role === "secgov_responsavel") ? "Analista" : "Envio"}
+</th>                    <th className="text-right text-xs font-semibold text-muted-foreground uppercase tracking-wider px-5 py-3">Ações</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -440,19 +467,15 @@ const temAjusteCritico = ajustesUrgentes.some(a => a.diasRestantes >= 0 && a.dia
                         </span>
                       </td>
                       <td className="px-5 py-4">
-  <div className="flex flex-col gap-1">
-    <StatusBadge status={process.status} />
-    {process.status === "em_ajuste" && (
-      <span className="text-[10px] font-medium text-amber-600 flex items-center gap-1">
-        <RotateCcw className="w-3 h-3" />
-        Prazo: 15 dias úteis
-      </span>
-    )}
-  </div>
+  <StatusBadge status={process.status} />
 </td>
-                      <td className="px-5 py-4 text-sm text-muted-foreground">
-                        {process.dataEnvioRevisao}
-                      </td>
+<td className="px-5 py-4 text-sm text-muted-foreground">
+  {(profile.role === "secgov_responsavel") ? (
+    process.analistaNome || <em className="opacity-50">Não designado</em>
+  ) : (
+    process.dataEnvioRevisao
+  )}
+</td>
                       
                       <td className="px-5 py-4">
                         <div className="flex items-center justify-end gap-2">
@@ -462,25 +485,6 @@ const temAjusteCritico = ajustesUrgentes.some(a => a.diasRestantes >= 0 && a.dia
                           {/* SECGOV */}
                           {(profile.role === "secgov" || profile.role === "secgov_responsavel") && (
                             <>
-
-
-                            {profile.role === "secgov_responsavel" && (
-                              
-      <Button
-        variant="outline"
-        size="sm"
-        className="gap-1.5 border-violet-200 text-violet-600 hover:bg-violet-50"
-        onClick={() => {
-          setProcessForAnalyst(process);
-          setAnalistaSelecionado(process.analistaUsername || "");
-          setShowDesignarAnalista(true);
-        }}
-      >
-        <UserCog className="w-4 h-4" />
-      </Button>
-    )}
-
-
                             <Link
                                 to="/revisao/$processId"
                                 params={{ processId: process.id }}
@@ -489,6 +493,24 @@ const temAjusteCritico = ajustesUrgentes.some(a => a.diasRestantes >= 0 && a.dia
                                   <ClipboardList className="w-4 h-4" />
 Revisar                                </Button>
                             </Link>
+
+
+                            {profile.role === "secgov_responsavel" && (
+                              
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="gap-1.5 border-violet-200 text-violet-600 hover:bg-violet-50"
+                                onClick={() => {
+                                  setProcessForAnalyst(process);
+                                  setAnalistaSelecionado(process.analistaUsername || "");
+                                  setShowDesignarAnalista(true);
+                                }}
+                              >
+                                <UserCog className="w-4 h-4" />
+                              </Button>
+                            )}
+
                             <Link
                             to="/historico/$processId"
                             params={{ processId: process.id }}
@@ -504,6 +526,20 @@ Revisar                                </Button>
                           {/* Unidade */}
                           {profile.role === "unidade" && (
                             <>
+                            {process.status === "em_ajuste" && (
+        <Button
+          variant="ghost"
+          size="sm"
+          title="Ver prazos de ajuste"
+          onClick={() => {
+            setProcessForDeadline(process);
+            setShowDeadlineModal(true);
+          }}
+          className="h-8 w-8 p-0 text-amber-600 hover:bg-amber-50 hover:text-amber-700"
+        >
+          <AlertCircle className="w-4 h-4" />
+        </Button>
+      )}
                             <Link
                                 to="/revisao/$processId"
                                 params={{ processId: process.id }}
@@ -588,6 +624,76 @@ Revisar                                </Button>
           )}
         </main>
       </div>
+      {showDeadlineModal && processForDeadline && (() => {
+  const [d, m, y] = processForDeadline.dataEnvioRevisao.split("/");
+  const dataInicio = new Date(Number(y), Number(m) - 1, Number(d));
+  const dataPrazoFinal = addBusinessDays(dataInicio, 15);
+  const diasRestantes = getRemainingBusinessDays(dataPrazoFinal);
+  const diaUtilAtual = getElapsedBusinessDays(processForDeadline.dataEnvioRevisao) + 1;
+  const isAtrasado = diasRestantes < 0;
+
+  return (
+    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
+      <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl animate-in zoom-in-95 duration-200">
+        <div className="flex items-center gap-3 mb-4">
+          <div className={cn(
+            "w-10 h-10 rounded-full flex items-center justify-center",
+            isAtrasado ? "bg-red-100 text-red-600" : "bg-amber-100 text-amber-600"
+          )}>
+            <AlertCircle className="w-6 h-6" />
+          </div>
+          <h2 className="text-lg font-bold">Prazos para Ajuste</h2>
+        </div>
+
+        <div className="space-y-4 mb-6">
+          <div className="p-3 rounded-xl bg-muted/50 border border-border">
+            <p className="text-xs text-muted-foreground uppercase font-bold mb-1">Processo</p>
+            <p className="text-sm font-medium">{processForDeadline.nome}</p>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <div className="p-3 rounded-xl border border-border text-center">
+              <p className="text-[10px] text-muted-foreground uppercase font-bold">Dia Útil Atual</p>
+              <p className="text-lg font-bold">{diaUtilAtual}º</p>
+            </div>
+            <div className="p-3 rounded-xl border border-border text-center">
+              <p className="text-[10px] text-muted-foreground uppercase font-bold">Prazo Total</p>
+              <p className="text-lg font-bold text-primary">15 dias</p>
+            </div>
+          </div>
+
+          <div className={cn(
+            "p-4 rounded-xl border text-center",
+            isAtrasado ? "bg-red-50 border-red-200" : "bg-blue-50 border-blue-200"
+          )}>
+            {isAtrasado ? (
+              <p className="text-sm font-bold text-red-700 uppercase">
+                Atrasado há {Math.abs(diasRestantes)} dias úteis
+              </p>
+            ) : (
+              <p className="text-sm font-bold text-blue-700 uppercase">
+                Restam {diasRestantes} dias úteis
+              </p>
+            )}
+            <p className="text-[10px] text-foreground/60 mt-1">
+              Data limite: {dataPrazoFinal.toLocaleDateString('pt-BR')}
+            </p>
+          </div>
+        </div>
+
+        <Button 
+          className="w-full bg-slate-900 text-white" 
+          onClick={() => {
+            setShowDeadlineModal(false);
+            setProcessForDeadline(null);
+          }}
+        >
+          Fechar
+        </Button>
+      </div>
+    </div>
+  );
+})()}
 
       {showDesignarAnalista && processForAnalyst && (
   <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">

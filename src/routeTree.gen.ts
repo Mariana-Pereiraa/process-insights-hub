@@ -14,6 +14,7 @@ import { Route as PrazoRevisaoRouteImport } from './routes/prazo-revisao'
 import { Route as NotificacoesRouteImport } from './routes/notificacoes'
 import { Route as GerenciamentoAnalistasRouteImport } from './routes/gerenciamento-analistas'
 import { Route as AnalistasRouteImport } from './routes/analistas'
+import { Route as AnalistaIdRouteImport } from './routes/$analistaId'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as RevisaoProcessIdRouteImport } from './routes/revisao.$processId'
 import { Route as HistoricoProcessIdRouteImport } from './routes/historico.$processId'
@@ -43,6 +44,11 @@ const AnalistasRoute = AnalistasRouteImport.update({
   path: '/analistas',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AnalistaIdRoute = AnalistaIdRouteImport.update({
+  id: '/$analistaId',
+  path: '/$analistaId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -61,6 +67,7 @@ const HistoricoProcessIdRoute = HistoricoProcessIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/$analistaId': typeof AnalistaIdRoute
   '/analistas': typeof AnalistasRoute
   '/gerenciamento-analistas': typeof GerenciamentoAnalistasRoute
   '/notificacoes': typeof NotificacoesRoute
@@ -71,6 +78,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/$analistaId': typeof AnalistaIdRoute
   '/analistas': typeof AnalistasRoute
   '/gerenciamento-analistas': typeof GerenciamentoAnalistasRoute
   '/notificacoes': typeof NotificacoesRoute
@@ -82,6 +90,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/$analistaId': typeof AnalistaIdRoute
   '/analistas': typeof AnalistasRoute
   '/gerenciamento-analistas': typeof GerenciamentoAnalistasRoute
   '/notificacoes': typeof NotificacoesRoute
@@ -94,6 +103,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/$analistaId'
     | '/analistas'
     | '/gerenciamento-analistas'
     | '/notificacoes'
@@ -104,6 +114,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/$analistaId'
     | '/analistas'
     | '/gerenciamento-analistas'
     | '/notificacoes'
@@ -114,6 +125,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/$analistaId'
     | '/analistas'
     | '/gerenciamento-analistas'
     | '/notificacoes'
@@ -125,6 +137,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AnalistaIdRoute: typeof AnalistaIdRoute
   AnalistasRoute: typeof AnalistasRoute
   GerenciamentoAnalistasRoute: typeof GerenciamentoAnalistasRoute
   NotificacoesRoute: typeof NotificacoesRoute
@@ -171,6 +184,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AnalistasRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/$analistaId': {
+      id: '/$analistaId'
+      path: '/$analistaId'
+      fullPath: '/$analistaId'
+      preLoaderRoute: typeof AnalistaIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -197,6 +217,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AnalistaIdRoute: AnalistaIdRoute,
   AnalistasRoute: AnalistasRoute,
   GerenciamentoAnalistasRoute: GerenciamentoAnalistasRoute,
   NotificacoesRoute: NotificacoesRoute,

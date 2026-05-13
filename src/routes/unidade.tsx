@@ -62,6 +62,17 @@ const ACTION_STATUSES = new Set([
   "pendente_revisao_anual",
 ]);
 
+interface MovimentacaoConsolidada {
+  processoNome: string;
+  processId: string;
+  id: string;
+  tipo: string; // O erro indica que o campo correto é 'tipo'
+  data: string;
+  hora: string;
+  usuario?: string;
+  observacao?: string;
+}
+
 function UnidadePage() {
   const { profile } = useProfile();
   const [openProcessId, setOpenProcessId] = useState<string | null>(null);
@@ -83,13 +94,32 @@ function UnidadePage() {
     const ids = new Set(meusProcessos.map((p) => p.id));
     return mockNotifications.filter((n) => ids.has(n.processId));
   }, [meusProcessos]);
+  
 
   // Histórico consolidado: últimas movimentações dos processos da unidade
-  const historicoConsolidado = useMemo(() => {
-    return meusProcessos.flatMap((p) =>
-      p.historico.map((h) => ({ ...h, processoNome: p.nome, processId: p.id }))
-    );
-  }, [meusProcessos]);
+  // 1. Definição do histórico consolidado (estava faltando no seu código)
+  // 1. Histórico consolidado com tipagem correta
+const historicoConsolidado = useMemo<MovimentacaoConsolidada[]>(() => {
+  return meusProcessos.flatMap((p) =>
+    p.historico.map((h) => ({ 
+      ...h, 
+      processoNome: p.nome, 
+      processId: p.id,
+      tipo: h.tipo // Certificando que estamos usando 'tipo'
+    }))
+  );
+}, [meusProcessos]);
+
+// 2. Histórico recente sem o uso de 'any'
+const historicoRecente = useMemo(() => {
+  return [...historicoConsolidado]
+    .sort((a, b) => {
+      const dataA = a.data.split("/").reverse().join("-") + "T" + a.hora;
+      const dataB = b.data.split("/").reverse().join("-") + "T" + b.hora;
+      return dataB.localeCompare(dataA);
+    })
+    .slice(0, 5);
+}, [historicoConsolidado]);
 
   return (
     <div className="flex min-h-screen w-full bg-background">
@@ -153,6 +183,77 @@ function UnidadePage() {
               </div>
             </div>
 
+            {/* Movimentações recentes */}
+<section className="rounded-2xl border border-border bg-card p-5">
+  <div className="flex items-center gap-2 mb-4">
+    <History className="w-5 h-5 text-primary" />
+    <h2 className="text-base font-semibold text-foreground">Movimentações recentes</h2>
+  </div>
+
+  <div className="space-y-2">
+    {historicoRecente.length === 0 ? (
+      <p className="text-sm text-muted-foreground py-4 text-center">Sem movimentações recentes.</p>
+    ) : (
+      historicoRecente.map((evento) => {
+        const isAjuste = evento.tipo.toLowerCase().includes("ajuste");
+        
+        return (
+          <div
+            key={evento.id}
+            className={cn(
+              "group relative flex items-center justify-between p-3 rounded-xl border transition-all",
+              isAjuste 
+                ? "border-amber-300 bg-amber-50/40 ring-1 ring-amber-100 shadow-sm" 
+                : "border-border bg-muted/10 hover:bg-muted/30"
+            )}
+          >
+            <div className="flex items-center gap-3 min-w-0">
+              <div className={cn(
+                "w-8 h-8 rounded-lg flex items-center justify-center shrink-0 shadow-sm",
+                isAjuste ? "bg-amber-500 text-white" : "bg-slate-200 text-slate-600"
+              )}>
+                {isAjuste ? <RotateCcw className="w-4 h-4" /> : <History className="w-4 h-4" />}
+              </div>
+              
+              <div className="min-w-0">
+                <div className="flex items-center gap-2">
+                  <p className={cn(
+                    "text-sm font-semibold truncate",
+                    isAjuste ? "text-amber-900" : "text-foreground"
+                  )}>
+                    {evento.tipo}
+                  </p>
+                  {isAjuste && (
+                    <span className="text-[9px] font-black uppercase px-1.5 py-0.5 bg-amber-200 text-amber-800 rounded-md">
+                      Ação Necessária
+                    </span>
+                  )}
+                </div>
+                <p className="text-[11px] text-muted-foreground truncate">
+                  <span className="font-medium text-foreground/60">Processo:</span> {evento.processoNome}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex flex-col items-end shrink-0 gap-1">
+              <span className="text-[10px] font-medium text-muted-foreground whitespace-nowrap bg-background px-2 py-0.5 rounded-full border border-border">
+                {evento.data} às {evento.hora}
+              </span>
+              <Link 
+                to="/historico/$processId" 
+                params={{ processId: evento.processId }}
+                className="text-[10px] text-primary hover:underline font-bold"
+              >
+                Ver detalhes
+              </Link>
+            </div>
+          </div>
+        );
+      })
+    )}
+  </div>
+</section>
+
             {/* Ações pendentes em destaque */}
             {pendentes.length > 0 && (
               <section className="rounded-2xl border-2 border-amber-300 bg-amber-50/60 p-5">
@@ -214,7 +315,7 @@ function UnidadePage() {
                               Histórico
                             </Button>
                           </Link>
-                          <Link to="/historico/$processId" params={{ processId: p.id }}>
+                          <Link to="/revisao/$processId" params={{ processId: p.id }}>
                             <Button size="sm" className="gap-1.5 bg-amber-600 hover:bg-amber-700">
                               <ClipboardList className="w-4 h-4" />
                               Realizar ajuste
@@ -314,20 +415,6 @@ function UnidadePage() {
               )}
             </section>
 
-            {/* Histórico de movimentações consolidado */}
-            <section className="rounded-2xl border border-border bg-card p-5">
-              <div className="flex items-center gap-2 mb-4">
-                <CalendarClock className="w-5 h-5 text-primary" />
-                <h2 className="text-base font-semibold text-foreground">Histórico de movimentações</h2>
-              </div>
-              {historicoConsolidado.length === 0 ? (
-                <p className="text-sm text-muted-foreground py-6 text-center">
-                  Sem movimentações registradas.
-                </p>
-              ) : (
-                <HistoricoTimeline eventos={historicoConsolidado} />
-              )}
-            </section>
           </div>
         </main>
       </div>

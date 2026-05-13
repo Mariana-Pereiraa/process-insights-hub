@@ -236,17 +236,7 @@ const [analistaSelecionado, setAnalistaSelecionado] = useState<string>(
               <div className="flex flex-col items-end gap-3">
                 <StatusBadge status={statusAtual} />
 
-                {profile.role === "secgov_responsavel" && (
-                  <Button
-                    onClick={() => setShowDesignarAnalista(true)}
-                    variant="outline"
-                    size="sm"
-                    className="gap-2"
-                  >
-                    <UserCog className="w-4 h-4" />
-                    {analistaAtual ? "Alterar analista" : "Designar analista"}
-                  </Button>
-                )}
+    
               </div>
             </div>
           </div>
@@ -587,56 +577,6 @@ const [analistaSelecionado, setAnalistaSelecionado] = useState<string>(
     </div>
   </div>
 )}
-
-{/* Modal: Designar analista (SecGovResponsável) */}
-{showDesignarAnalista && (
-  <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-    <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl">
-      <div className="flex items-center gap-2 mb-3">
-        <UserCog className="w-5 h-5 text-violet-600" />
-        <h2 className="text-lg font-bold">Designar responsável pela análise</h2>
-      </div>
-      <p className="text-sm text-muted-foreground mb-4">
-        Escolha quem ficará responsável por analisar este processo.
-        Apenas o perfil <strong>Responsável SECGOV</strong> pode fazer essa atribuição.
-      </p>
-
-      <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">
-        Analista
-      </label>
-      <select
-        value={analistaSelecionado}
-        onChange={(e) => setAnalistaSelecionado(e.target.value)}
-        className="w-full px-4 py-2.5 rounded-xl border border-input bg-background text-sm mb-5"
-      >
-        <option value="">— Selecione —</option>
-        {analistasDisponiveis.map((a) => (
-          <option key={a.username} value={a.username}>
-            {a.nome} · {a.cargo}
-          </option>
-        ))}
-      </select>
-
-      <div className="flex justify-end gap-3">
-        <Button variant="outline" onClick={() => setShowDesignarAnalista(false)}>
-          Cancelar
-        </Button>
-        <Button
-          disabled={!analistaSelecionado}
-          onClick={() => {
-            const a = analistasDisponiveis.find((x) => x.username === analistaSelecionado);
-            if (a) setAnalistaAtual({ nome: a.nome, username: a.username });
-            setShowDesignarAnalista(false);
-          }}
-          className="bg-violet-600 hover:bg-violet-700 text-white"
-        >
-          Confirmar designação
-        </Button>
-      </div>
-    </div>
-  </div>
-)}
-
         </main>
       </div>
     </div>
